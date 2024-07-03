@@ -2,17 +2,29 @@ import './main.css';
 import { init as authenticatorInit, login, logout } from './auth';
 import { getMyPlaylists, initPlayer, playTrack, togglePlay, getPlaylist, getPlaylistTracks, getPlaylistCover, getTrackCover } from './api';
 
+import playIcon from '/play.svg';
+import pauseIcon from '/pause.svg';
+import shuffleIcon from '/shuffle.svg';
+import skipPreviousIcon from '/skip-previous.svg';
+import skipNextIcon from '/skip-next.svg';
+import repeatIcon from '/loop.svg';
+
 const publicSection = document.getElementById("publicSection")!;
 const privateSection = document.getElementById("privateSection")!;
 const profileSection = document.getElementById("profileSection")!;
 const playlistsSection = document.getElementById("playlistsSection")!;
 const actionsSection = document.getElementById("actionsSection")!;
+
 const playButton = document.getElementById("playButton")!;
+const shuffleButton = document.getElementById("shuffleButton")!;
+const skipPreviousButton = document.getElementById("previousTrackButton")!;
+const skipNextButton = document.getElementById("nextTrackButton")!;
+const repeatButton = document.getElementById("repeatButton")!;
 
 let isPlaying = false;
 
-const updateButtonText = () => {
-  playButton.innerText = isPlaying ? "Pause" : "Play";
+const updateButtonContent = () => {
+  playButton.innerHTML = isPlaying ? `<img src="${pauseIcon}" alt="Pause Icon">` : `<img src="${playIcon}" alt="Play Icon">`;
 };
 
 async function init() {
@@ -171,32 +183,27 @@ async function renderTracks(tracks: PlaylistTracks): Promise<void> {
         playTrack(trackUri);
         togglePlay();
         isPlaying = true;
-        updateButtonText(); 
+        updateButtonContent(); 
       }
     });
   });
 }
 
-// function initActionsSection(): void {
-//   let isPlaying = false;
-
-//   document.getElementById("playButton")!.addEventListener("click", () => {
-//     togglePlay();
-//     isPlaying = !isPlaying;
-//   });
-//   document.getElementById("playButton")!.innerText = isPlaying ? "Pause" : "Play";
-//   renderActionsSection(true);
-// }
 
 function initActionsSection(): void {
+
+  skipPreviousButton.innerHTML = `<img src="${skipPreviousIcon}" alt="Pause Icon">`;
+  skipNextButton.innerHTML = `<img src="${skipNextIcon}" alt="Pause Icon">`;
+  shuffleButton.innerHTML = `<img src="${shuffleIcon}" alt="Pause Icon">`;
+  repeatButton.innerHTML = `<img src="${repeatIcon}" alt="Pause Icon">`;
 
   playButton.addEventListener("click", () => {
     togglePlay();
     isPlaying = !isPlaying;
-    updateButtonText(); 
+    updateButtonContent(); 
   });
 
-  updateButtonText();
+  updateButtonContent();
   
   renderActionsSection(true);
 }
