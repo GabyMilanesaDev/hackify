@@ -1,6 +1,6 @@
 import './main.css';
 import { init as authenticatorInit, login, logout } from './auth';
-import { getMyPlaylists, initPlayer, playTrack, togglePlay, getPlaylistTracks } from './api';
+import { getMyPlaylists, initPlayer, playTrack, togglePlay, getPlaylistTracks, getPlaylistCover } from './api';
 
 const publicSection = document.getElementById("publicSection")!;
 const privateSection = document.getElementById("privateSection")!;
@@ -83,6 +83,7 @@ function initPlaylistSection(profile?: UserProfile): void {
           item.addEventListener('click', (event) => {
             const playlistId = (event.target as HTMLElement).getAttribute('data-playlist-id');
             if (playlistId) {
+              renderPlaylistCover(playlistId);
               loadPlaylistTracks(playlistId);
             }
           });
@@ -93,6 +94,17 @@ function initPlaylistSection(profile?: UserProfile): void {
 
 function renderPlaylistsSection(render: boolean) {
   playlistsSection.style.display = render ? "block" : "none";
+}
+
+function renderPlaylistCover(playlistId: string) {
+  const cover = document.getElementById("playlistCover");
+  if (!cover) {
+    throw new Error("Element not found");
+  }
+  getPlaylistCover(localStorage.getItem("accessToken")!, playlistId)
+    .then((coverUrl) => {
+      cover.setAttribute("src", coverUrl);
+    });
 }
 
 function renderPlaylists(playlists: PlaylistRequest) {

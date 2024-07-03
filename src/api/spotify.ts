@@ -71,3 +71,12 @@ export async function getPlaylistTracks(token: string, playlistId: string): Prom
 
   return await result.json();
 }
+
+export async function getPlaylistCover(token: string, playlistId: string): Promise<string> {
+  const result = await fetch(`${api}/v1/playlists/${playlistId}/images`, {
+    method: "GET", headers: { Authorization: `Bearer ${token}` }
+  });
+
+  const images = await result.json();
+  return images[0].url;
+}
