@@ -63,3 +63,11 @@ export async function getMyPlaylists(token: string): Promise<PlaylistRequest> {
 }
 
 // TODO agregar nuevas funciones para obtener playlists, canciones, etc
+
+export async function getPlaylistTracks(token: string, playlistId: string): Promise<PlaylistTracks> {
+  const result = await fetch(`${api}/v1/playlists/${playlistId}/tracks`, {
+    method: "GET", headers: { Authorization: `Bearer ${token}` }
+  });
+
+  return await result.json();
+}

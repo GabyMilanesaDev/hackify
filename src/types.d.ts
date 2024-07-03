@@ -27,9 +27,27 @@ type TokenResponse = {
 }
 
 type Playlist = {
+  id: string;
   name: string;
-}
+};
 
 type PlaylistRequest = {
   items: Playlist[];
-}
+};
+
+type PlaylistTracks = {
+  items: TrackItem[];
+};
+
+type TrackItem = {
+  track: Track;
+};
+
+type Track = {
+  name: string;
+  artists: Artist[];
+};
+
+type Artist = {
+  name: string;
+};
