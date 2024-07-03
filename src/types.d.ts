@@ -48,9 +48,21 @@ type Track = {
   id: string;
   name: string;
   uri: string;
+  duration_ms: number;
   artists: Artist[];
 };
 
 type Artist = {
   name: string;
+};
+
+type PlaybackState = {
+  is_playing: boolean;
+  progress_ms: number;
+  item: {
+    id: string;
+    name: string;
+    artists: Artist[];
+    duration_ms: number;
+  };
 };

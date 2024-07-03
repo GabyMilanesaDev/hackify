@@ -7,6 +7,13 @@ const privateSection = document.getElementById("privateSection")!;
 const profileSection = document.getElementById("profileSection")!;
 const playlistsSection = document.getElementById("playlistsSection")!;
 const actionsSection = document.getElementById("actionsSection")!;
+const playButton = document.getElementById("playButton")!;
+
+let isPlaying = false;
+
+const updateButtonText = () => {
+  playButton.innerText = isPlaying ? "Pause" : "Play";
+};
 
 async function init() {
   let profile: UserProfile | undefined;
@@ -163,18 +170,34 @@ async function renderTracks(tracks: PlaylistTracks): Promise<void> {
       if (trackUri) {
         playTrack(trackUri);
         togglePlay();
+        isPlaying = true;
+        updateButtonText(); 
       }
     });
   });
 }
 
+// function initActionsSection(): void {
+//   let isPlaying = false;
+
+//   document.getElementById("playButton")!.addEventListener("click", () => {
+//     togglePlay();
+//     isPlaying = !isPlaying;
+//   });
+//   document.getElementById("playButton")!.innerText = isPlaying ? "Pause" : "Play";
+//   renderActionsSection(true);
+// }
+
 function initActionsSection(): void {
-  document.getElementById("changeButton")!.addEventListener("click", () => {
-    playTrack('spotify:track:11dFghVXANMlKmJXsNCbNl'); // solo a modo de ejemplo
-  });
-  document.getElementById("playButton")!.addEventListener("click", () => {
+
+  playButton.addEventListener("click", () => {
     togglePlay();
+    isPlaying = !isPlaying;
+    updateButtonText(); 
   });
+
+  updateButtonText();
+  
   renderActionsSection(true);
 }
 
