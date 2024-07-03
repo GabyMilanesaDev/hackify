@@ -1,6 +1,6 @@
 import './main.css';
 import { init as authenticatorInit, login, logout } from './auth';
-import { getMyPlaylists, initPlayer, playTrack, togglePlay, getPlaylistTracks, getPlaylistCover } from './api';
+import { getMyPlaylists, initPlayer, playTrack, togglePlay, getPlaylist, getPlaylistTracks, getPlaylistCover, getTrackCover } from './api';
 
 const publicSection = document.getElementById("publicSection")!;
 const privateSection = document.getElementById("privateSection")!;
@@ -107,6 +107,14 @@ function renderPlaylistCover(playlistId: string) {
     });
 }
 
+function renderPlaylistDescription(playlist: Playlist): void {
+  const descriptionElement = document.getElementById("playlistDescription");
+  if (!descriptionElement) {
+    throw new Error("Element not found: playlistDescription");
+  }
+  descriptionElement.innerText = playlist.description;
+}
+
 function renderPlaylists(playlists: PlaylistRequest) {
   const playlist = document.getElementById("playlists");
   if (!playlist) {
@@ -115,33 +123,45 @@ function renderPlaylists(playlists: PlaylistRequest) {
   playlist.innerHTML = playlists.items.map((playlist) => {
     return `<li data-playlist-id="${playlist.id}" class="playlist-item">${playlist.name}</li>`;
   }).join('');
+  
 }
 
 async function loadPlaylistTracks(playlistId: string): Promise<void> {
   try {
     const token = localStorage.getItem("accessToken")!;
-    const tracks = await getPlaylistTracks(token, playlistId);
+    const [playlist, tracks] = await Promise.all([
+      getPlaylist(token, playlistId),
+      getPlaylistTracks(token, playlistId)
+    ]);
+    renderPlaylistDescription(playlist);
     renderTracks(tracks);
   } catch (error) {
     console.error('Error loading playlist tracks:', error);
   }
 }
 
-function renderTracks(tracks: PlaylistTracks): void {
+async function renderTracks(tracks: PlaylistTracks): Promise<void> {
   const tracksElement = document.getElementById("tracks");
   if (!tracksElement) {
     throw new Error("Element not found");
   }
-  tracksElement.innerHTML = tracks.items.map((trackItem) => {
-    const track = trackItem.track;
-    return `<li data-track-uri="${track.uri}" class="track-item">${track.name} - ${track.artists.map(artist => artist.name).join(', ')}</li>`;
-  }).join('');
 
-  document.querySelectorAll('.track-item').forEach(item => {
-    item.addEventListener('click', (event) => {
-      const trackUri = (event.target as HTMLElement).getAttribute('data-track-uri');
+  const trackItemsHTML = await Promise.all(tracks.items.map(async (trackItem) => {
+    const track = trackItem.track;
+    const coverUrl = await getTrackCover(track.id);
+    return `<li data-track-uri="${track.uri}" class="track-item">
+              <img src="${coverUrl}" alt="Cover" style="width: 50px; height: 50px;">
+              ${track.name} - ${track.artists.map(artist => artist.name).join(', ')}
+            </li>`;
+  }));
+
+  tracksElement.innerHTML = trackItemsHTML.join('');
+
+  tracksElement.querySelectorAll('.track-item').forEach(item => {
+    item.addEventListener('click', async () => {
+      const trackUri = item.getAttribute('data-track-uri');
       if (trackUri) {
-        playTrack(trackUri);
+        await playTrack(trackUri);
         togglePlay();
       }
     });

@@ -58,11 +58,21 @@ export async function getMyPlaylists(token: string): Promise<PlaylistRequest> {
   const result = await fetch(`${api}/v1/me/playlists`, {
     method: "GET", headers: { Authorization: `Bearer ${token}` }
   });
-
   return await result.json();
 }
 
 // TODO agregar nuevas funciones para obtener playlists, canciones, etc
+
+export async function getPlaylist(token: string, playlistId: string): Promise<Playlist> {
+  const response = await fetch(`${api}/v1/playlists/${playlistId}`, {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (!response.ok) {
+    throw new Error('Failed to fetch playlist');
+  }
+  return await response.json();
+}
 
 export async function getPlaylistTracks(token: string, playlistId: string): Promise<PlaylistTracks> {
   const result = await fetch(`${api}/v1/playlists/${playlistId}/tracks`, {
@@ -79,4 +89,17 @@ export async function getPlaylistCover(token: string, playlistId: string): Promi
 
   const images = await result.json();
   return images[0].url;
+}
+
+export async function getTrackCover(trackId: string): Promise<string> {
+  const token = localStorage.getItem("accessToken")!;
+  const response = await fetch(`${api}/v1/tracks/${trackId}`, {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (!response.ok) {
+    throw new Error('Failed to fetch track details');
+  }
+  const data = await response.json();
+  return data.album.images[0].url;
 }

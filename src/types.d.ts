@@ -29,6 +29,7 @@ type TokenResponse = {
 type Playlist = {
   id: string;
   name: string;
+  description: string;
 };
 
 type PlaylistRequest = {
@@ -44,6 +45,7 @@ type TrackItem = {
 };
 
 type Track = {
+  id: string;
   name: string;
   uri: string;
   artists: Artist[];
