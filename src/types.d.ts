@@ -45,6 +45,7 @@ type TrackItem = {
 
 type Track = {
   name: string;
+  uri: string;
   artists: Artist[];
 };
 

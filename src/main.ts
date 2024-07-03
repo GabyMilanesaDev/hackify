@@ -122,8 +122,18 @@ function renderTracks(tracks: PlaylistTracks): void {
   }
   tracksElement.innerHTML = tracks.items.map((trackItem) => {
     const track = trackItem.track;
-    return `<li>${track.name} - ${track.artists.map(artist => artist.name).join(', ')}</li>`;
+    return `<li data-track-uri="${track.uri}" class="track-item">${track.name} - ${track.artists.map(artist => artist.name).join(', ')}</li>`;
   }).join('');
+
+  document.querySelectorAll('.track-item').forEach(item => {
+    item.addEventListener('click', (event) => {
+      const trackUri = (event.target as HTMLElement).getAttribute('data-track-uri');
+      if (trackUri) {
+        playTrack(trackUri);
+        togglePlay();
+      }
+    });
+  });
 }
 
 function initActionsSection(): void {
