@@ -22,6 +22,9 @@ const skipNextButton = document.getElementById("nextTrackButton")!;
 const repeatButton = document.getElementById("repeatButton")!;
 
 let isPlaying = false;
+let queue: string[] = []
+console.log(queue)
+let position = 0
 
 const updateButtonContent = () => {
   playButton.innerHTML = isPlaying ? `<img src="${pauseIcon}" alt="Pause Icon">` : `<img src="${playIcon}" alt="Play Icon">`;
@@ -115,6 +118,14 @@ function renderPlaylistsSection(render: boolean) {
   playlistsSection.style.display = render ? "block" : "none";
 }
 
+ async function startPlayback(uris: string[]): Promise<void> {
+  queue = uris
+  playTrack(uris[position]);
+  //  for (let i = 0; i < uris.length; i++) {
+  //    playTrack(uris[i]);
+  //  }
+}
+
 function renderPlaylistCover(playlistId: string) {
   const cover = document.getElementById("playlistCover");
   if (!cover) {
@@ -134,6 +145,14 @@ function renderPlaylistDescription(playlist: Playlist): void {
   descriptionElement.innerText = playlist.description;
 }
 
+function renderPlaylistName(playlist: Playlist): void {
+  const nameElement = document.getElementById("playlistName");
+  if (!nameElement) {
+    throw new Error("Element not found: playlistName");
+  }
+  nameElement.innerText = playlist.name;
+}
+
 function renderPlaylists(playlists: PlaylistRequest) {
   const playlist = document.getElementById("playlists");
   if (!playlist) {
@@ -145,6 +164,21 @@ function renderPlaylists(playlists: PlaylistRequest) {
   
 }
 
+function renderPlaylistPlayButton(tracks: PlaylistTracks) {
+  const playPlaylistButton = document.getElementById("playPlaylistButton");
+  if (!playPlaylistButton) {
+    throw new Error("Element not found");
+  }
+  playPlaylistButton.addEventListener("click", async () => {
+    const uris = tracks.items.map(trackItem => trackItem.track.uri);
+    startPlayback(uris);
+    togglePlay();
+
+    isPlaying = true;
+    updateButtonContent(); 
+  });
+}
+
 async function loadPlaylistTracks(playlistId: string): Promise<void> {
   try {
     const token = localStorage.getItem("accessToken")!;
@@ -153,7 +187,9 @@ async function loadPlaylistTracks(playlistId: string): Promise<void> {
       getPlaylistTracks(token, playlistId)
     ]);
     renderPlaylistDescription(playlist);
+    renderPlaylistName(playlist)
     renderTracks(tracks);
+    renderPlaylistPlayButton(tracks)
   } catch (error) {
     console.error('Error loading playlist tracks:', error);
   }
@@ -189,6 +225,19 @@ async function renderTracks(tracks: PlaylistTracks): Promise<void> {
   });
 }
 
+function skipNextTrack() {
+  position += 1
+  playTrack(queue[position]);
+}
+
+function skipPreviousTrack() {
+  if (position === 0) {
+    position = 0
+  } else {
+    position -= 1
+  }
+  playTrack(queue[position]);
+}
 
 function initActionsSection(): void {
 
@@ -204,7 +253,6 @@ function initActionsSection(): void {
   });
 
   updateButtonContent();
-  
   renderActionsSection(true);
 }
 

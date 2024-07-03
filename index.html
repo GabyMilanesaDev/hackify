@@ -31,8 +31,15 @@
   <section id="playlistsSection">
     <p>Mis playlists:</p>
     <ul id="playlists"></ul>
-    <img id="playlistCover" src="" alt="Playlist cover" height="300px" width="300px">
-    <p id="playlistDescription"></p>
+    <div class="playlist-hero">
+      <img id="playlistCover" src="" alt="Playlist cover" height="300px" width="300px">
+      <div class="playlist-hero-info">
+        <p>Playlist</p>
+        <h2 id="playlistName"></h2>
+        <p id="playlistDescription"></p>
+        <button id="playPlaylistButton">Reproducir Playlist</button>
+      </div>
+    </div>
     <ol id="tracks"></ol>
   </section>
   <section id="actionsSection">

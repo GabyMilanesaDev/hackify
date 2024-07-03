@@ -19,9 +19,22 @@ export function initPlayer(el: HTMLElement): void {
 }
 
 export function playTrack(uri: string): void {
+  console.log(`Reproduciendo track con URI: ${uri}`);
   EmbedController.loadUri(uri);
 }
 
 export function togglePlay(): void {
   EmbedController.togglePlay();
+}
+
+export async function startPlayback(uris: string[]): Promise<void> {
+
+  const queue = uris
+  let position = 0
+
+  playTrack(uris[position]);
+
+  //  for (let i = 0; i < uris.length; i++) {
+  //    playTrack(uris[i]);
+  //  }
 }

@@ -103,14 +103,3 @@ export async function getTrackCover(trackId: string): Promise<string> {
   const data = await response.json();
   return data.album.images[0].url;
 }
-
-// export async function getCurrentPlaybackState(): Promise<PlaybackState> {
-//   const token = localStorage.getItem("accessToken")!;
-//   console.log(token)
-//   const result = await fetch(`${api}/v1/me/player`, {
-//     method: "GET", headers: { Authorization: `Bearer ${token}` }
-//   });
-//   const resultData = await result.json();
-//   console.log(resultData)
-//   return resultData;
-// }
