@@ -11,6 +11,11 @@ iframe {
 	overflow: hidden;
 }
 
+img {
+	user-select: none;
+
+}
+
 :root {
 	font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 	line-height: 1.5;
@@ -41,7 +46,7 @@ body {
 	flex-direction: column;
 	place-items: flex-start;
 	min-width: 320px;
-	min-height: 100vh;
+	min-height: 100dvh;
 }
 
 h1 {
@@ -54,6 +59,14 @@ h1 {
 	margin: 0 auto;
 	padding: 2rem;
 	text-align: center;
+}
+
+.mainContainer {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	min-width: 100%;
 }
 
 .logo {
@@ -73,18 +86,13 @@ h1 {
 	padding: 2em;
 }
 
-.read-the-docs {
-	color: #888;
-}
-
-#playButton {
+.playButton {
 	background-color: transparent;
 	color: #ffffff;
 	padding: 0 0;
 	margin: 0;
 	border-radius: 0;
-	border: none; /* Eliminamos cualquier borde definido anteriormente */
-
+	border: none;
 }
 
 button {
@@ -101,16 +109,15 @@ button {
 button:hover {
 	border-color: #646cff;
 }
-button:focus,
+/* button:focus,
 button:focus-visible {
 	outline: 4px auto -webkit-focus-ring-color;
-}
+} */
 
 .playlist-hero {
     background-image: url('/playlist-frame.svg');
     display: flex;
-
-	/* background-color: red; */
+	min-width: inherit;
 	padding: 1rem;
     align-items: center;
     margin-top: 20px;
@@ -119,12 +126,11 @@ button:focus-visible {
 
 .playlist-hero-info {
     flex-grow: 1;
-	/* background-color: blue; */
 	display: flex;
 	flex-direction: column;
+	min-width: inherit;
 	justify-content: center;
 	align-items: flex-start;
-	/* gap: 0.5rem; */
 }
 
 .playlist-hero-info p {
@@ -132,6 +138,8 @@ button:focus-visible {
     margin-bottom: 20px;
 	margin-top: 20px;
     color: white;
+	user-select: none;
+
 }
 
 .playlist-hero-info h2 {
@@ -141,12 +149,101 @@ button:focus-visible {
 	font-weight: 700;
 	line-height: 0.5;
 	text-wrap: wrap;
+	user-select: none;
 }
 
 #playlistDescription {
     font-size: 1em;
     /* line-height: 1.5; */
 	color: #C6C7C5;
+	user-select: none;
+
+}
+
+.player {
+	position: sticky;
+	bottom: 0;
+	background-color: #171717;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	/* padding: 0 0.5rem; */
+	/* background-color: red; */
+}
+
+.player-actions {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	/* background-color: blue; */
+	border: #213547;
+	width: fit-content;
+	margin: auto;
+	gap: 1rem;
+}
+
+.player-actions button {
+	color: transparent;
+	border: none;
+	padding: 0.5rem;
+	cursor: pointer;
+}
+
+.player-actions button img {
+	width: 24px;
+	height: 24px;
+}
+
+.secondary-action-button {
+    fill: greenyellow;
+	color: greenyellow
+}
+
+.trackInfo {
+	display: flex;
+	line-height: 0.3;
+	gap: 0.75rem;
+	align-items: center;
+	color: #A7A7A7;
+	padding: 0.5rem;
+}
+
+.trackInfo img {
+	width: 64px;
+	height: 64px;
+	border-radius: 10%;
+}
+
+.trackInfo p:first-of-type {
+	font-weight: 600;
+	color: white
+}
+
+.track-item {
+	display: flex;
+	line-height: 0.3;
+	gap: 0.75rem;
+	align-items: center;
+	color: #A7A7A7;
+	padding: 0.25rem;
+	transition-duration: 100ms;
+    transition-timing-function: ease-in-out;
+
+}
+
+.track-item:hover {
+	background-color: #2A2F2D;
+}
+
+.track-item img {
+	width: 50px;
+	height: 50px;
+	border-radius: 10%;
+}
+
+.track-item p:first-of-type {
+	font-weight: 600;
+	color: white
 }
 
 @media (prefers-color-scheme: light) {

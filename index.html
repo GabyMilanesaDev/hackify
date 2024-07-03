@@ -11,7 +11,7 @@
   Sector publico: <br>
   <button id="loginButton">Login</button>
 </section>
-<section id="privateSection">
+<section id="privateSection" class="mainContainer">
   Sector privado: <br>
   <section id="menuSection">
     <button id="profileButton">Profile</button>
@@ -32,25 +32,32 @@
     <p>Mis playlists:</p>
     <ul id="playlists"></ul>
     <div class="playlist-hero">
-      <img id="playlistCover" src="" alt="Playlist cover" height="300px" width="300px">
+      <img id="playlistCover" src="" alt="Playlist cover" height="250px" width="250px">
       <div class="playlist-hero-info">
         <p>Playlist</p>
         <h2 id="playlistName"></h2>
         <p id="playlistDescription"></p>
-        <button id="playPlaylistButton">Reproducir Playlist</button>
+        <button id="playPlaylistButton" class="playButton"></button>
       </div>
     </div>
     <ol id="tracks"></ol>
   </section>
-  <section id="actionsSection">
-    <p>Acciones comunes:</p>
-    <button id="shuffleButton"></button>
-    <button id="previousTrackButton"></button>
-    <button id="playButton" class="playButton"></button>
-    <button id="nextTrackButton"></button>
-    <button id="repeatButton"></button>
-    <div id="progressContainer">
-      <div id="progressBar"></div>
+  <section id="actionsSection" class="player">
+    <div id="trackInfo" class="trackInfo">
+      <img id="trackCover" src="" alt="Track cover" height="64px" width="64px">
+      <div id="trackInfoText">
+        <p id="trackName"></p>
+        <p id="trackArtist"></p>
+      </div>
+    <div class="player-actions"> 
+      <button id="shuffleButton"></button>
+      <button id="previousTrackButton"></button>
+      <button id="playButton" class="playButton"></button>
+      <button id="nextTrackButton" class="secondary-action-button"></button>
+      <button id="repeatButton" class="secondary-action-button"></button>
+      <div id="progressContainer">
+        <div id="progressBar"></div>
+      </div>
     </div>
   </section>
   <section id="spotifyEmbedSection">

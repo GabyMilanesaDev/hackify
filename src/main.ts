@@ -3,6 +3,7 @@ import { init as authenticatorInit, login, logout } from './auth';
 import { getMyPlaylists, initPlayer, playTrack, togglePlay, getPlaylist, getPlaylistTracks, getPlaylistCover, getTrackCover } from './api';
 
 import playIcon from '/play.svg';
+import playSecondaryIcon from '/play-playlist.svg';
 import pauseIcon from '/pause.svg';
 import shuffleIcon from '/shuffle.svg';
 import skipPreviousIcon from '/skip-previous.svg';
@@ -29,6 +30,8 @@ let position = 0
 const updateButtonContent = () => {
   playButton.innerHTML = isPlaying ? `<img src="${pauseIcon}" alt="Pause Icon">` : `<img src="${playIcon}" alt="Play Icon">`;
 };
+
+
 
 async function init() {
   let profile: UserProfile | undefined;
@@ -165,18 +168,31 @@ function renderPlaylists(playlists: PlaylistRequest) {
 }
 
 function renderPlaylistPlayButton(tracks: PlaylistTracks) {
-  const playPlaylistButton = document.getElementById("playPlaylistButton");
+  const playPlaylistButton = document.getElementById("playPlaylistButton")!;
+  playPlaylistButton.innerHTML = `<img src="${playSecondaryIcon}" alt="Play Icon">`;
+
   if (!playPlaylistButton) {
     throw new Error("Element not found");
   }
   playPlaylistButton.addEventListener("click", async () => {
     const uris = tracks.items.map(trackItem => trackItem.track.uri);
     startPlayback(uris);
-    togglePlay();
+    currentTrackInfo(tracks.items[0].track);
+    // togglePlay();
 
     isPlaying = true;
     updateButtonContent(); 
   });
+}
+
+export function currentTrackInfo(track: Track) {
+  const trackCover = document.getElementById("trackCover")!;
+  const trackName = document.getElementById("trackName")!;
+  const trackArtist = document.getElementById("trackArtist")!;
+  trackCover.setAttribute("src", track.album.images[0].url);
+  trackName.innerText = track.name;
+  trackArtist.innerText = track.artists.map(artist => artist.name).join(', ');
+
 }
 
 async function loadPlaylistTracks(playlistId: string): Promise<void> {
@@ -206,7 +222,10 @@ async function renderTracks(tracks: PlaylistTracks): Promise<void> {
     const coverUrl = await getTrackCover(track.id);
     return `<li data-track-uri="${track.uri}" class="track-item">
               <img src="${coverUrl}" alt="Cover" style="width: 50px; height: 50px;">
-              ${track.name} - ${track.artists.map(artist => artist.name).join(', ')}
+              <div>
+              <p>${track.name}</p>
+              <p>${track.artists.map(artist => artist.name).join(', ')}</p>
+              </div>
             </li>`;
   }));
 
@@ -217,7 +236,7 @@ async function renderTracks(tracks: PlaylistTracks): Promise<void> {
       const trackUri = item.getAttribute('data-track-uri');
       if (trackUri) {
         playTrack(trackUri);
-        togglePlay();
+        // togglePlay();
         isPlaying = true;
         updateButtonContent(); 
       }
@@ -250,6 +269,17 @@ function initActionsSection(): void {
     togglePlay();
     isPlaying = !isPlaying;
     updateButtonContent(); 
+  });
+
+  skipPreviousButton.addEventListener("click", () => {
+    skipPreviousTrack();
+    // togglePlay();
+  }
+  );
+
+  skipNextButton.addEventListener("click", () => {
+    skipNextTrack();
+    // togglePlay();
   });
 
   updateButtonContent();

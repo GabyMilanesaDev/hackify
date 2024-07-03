@@ -50,6 +50,13 @@ type Track = {
   uri: string;
   duration_ms: number;
   artists: Artist[];
+  album: {
+    images: {
+      url: string;
+      height: number;
+      width: number;
+    }[];
+  };
 };
 
 type Artist = {
