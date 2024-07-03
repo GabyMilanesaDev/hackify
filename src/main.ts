@@ -161,7 +161,7 @@ async function renderTracks(tracks: PlaylistTracks): Promise<void> {
     item.addEventListener('click', async () => {
       const trackUri = item.getAttribute('data-track-uri');
       if (trackUri) {
-        await playTrack(trackUri);
+        playTrack(trackUri);
         togglePlay();
       }
     });
