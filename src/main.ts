@@ -192,6 +192,7 @@ export function currentTrackInfo(track: Track) {
   trackCover.setAttribute("src", track.album.images[0].url);
   trackName.innerText = track.name;
   trackArtist.innerText = track.artists.map(artist => artist.name).join(', ');
+  document.title = track.name;
 
 }
 

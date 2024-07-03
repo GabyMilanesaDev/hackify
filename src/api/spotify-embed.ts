@@ -14,6 +14,12 @@ export function initPlayer(el: HTMLElement): void {
     let callback = (EmbedController_: any) => {
       EmbedController = EmbedController_;
 
+       EmbedController.addListener('playback_update', (event: any) => {
+        if (event.data.isPaused && event.data.position === 0) {
+          console.log('La canción ha terminado');
+        }
+      });
+
     };
     IFrameAPI.createController(el, options, callback);
   };
