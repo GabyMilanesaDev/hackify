@@ -36,7 +36,7 @@
   <div class="main">
     <header class="header">
 
-      <input type="text" placeholder="Search music...">
+      <input id="searchInput" type="text" placeholder="Search music...">
 
       <section class="header-profile">
         <img id="profilePicture" width="48px" height="48px">
@@ -51,6 +51,7 @@
 
     </header>
     <section id="privateSection" class="content">
+
       <section id="profileSection">
         <h1>Display your Spotify profile data</h1>
         <h2>Logged in as <span id="displayName"></span></h2>
@@ -60,6 +61,24 @@
           <li>Spotify URI: <a id="uri" href="#"></a></li>
           <li>Link: <a id="url" href="#"></a></li>
         </ul>
+      </section>
+
+      <section id="searchSection">
+        <h2>Search results</h2>
+        <!-- <ul id="searchResultsList"></ul> -->
+
+        <div class="track-item-separator">
+          <p class="track-item-info"># Song</p>
+          <p class="track-item-album">Album</p>
+          <p class="track-item-album-artist">Artist</p>
+        </div>
+
+        <div class="track-container">
+          <ol id="searchResultsTracks"></ol>
+        </div>
+
+
+
       </section>
 
       <section id="savedSongs">
@@ -81,6 +100,11 @@
               <button id="playSavedSongsButton" class="playButton"></button>
             </div>
           </div>
+          <div class="track-item-separator">
+            <p class="track-item-info"># Song</p>
+            <p class="track-item-album">Album</p>
+            <p class="track-item-album-artist">Artist</p>
+          </div>
           <div class="track-container">
             <ol id="savedSongsTracks"></ol>
           </div>
@@ -100,6 +124,11 @@
             <p id="playlistDescription"></p>
             <button id="playPlaylistButton" class="playButton"></button>
           </div>
+        </div>
+        <div class="track-item-separator">
+          <p class="track-item-info"># Song</p>
+          <p class="track-item-album">Album</p>
+          <p class="track-item-album-artist">Artist</p>
         </div>
         <div class="track-container">
           <ol id="playlistTracks"></ol>

@@ -1,6 +1,6 @@
 import './main.css';
 import { init as authenticatorInit, login, logout } from './auth';
-import { getMyPlaylists, initPlayer, playTrack, togglePlay, getPlaylist, getPlaylistTracks, getPlaylistCover, getTrackCover, getUserSavedTracks } from './api';
+import { getMyPlaylists, initPlayer, playTrack, togglePlay, getPlaylist, getPlaylistTracks, getPlaylistCover, getTrackCover, getUserSavedTracks, searchTracks } from './api';
 import { globalState, setSongEnded, setSongIsPlaying } from './utils/globals'
 
 console.log({globalState})
@@ -10,7 +10,6 @@ if (globalState.songEnded) {
 } else if (globalState.songIsPlaying) {
   console.log('La canción está sonando');
 }
-
 
 import playIcon from '/play.svg';
 import playSecondaryIcon from '/play-playlist.svg';
@@ -30,6 +29,9 @@ const playlistDetail = document.getElementById("playlistDetail")!;
 
 const homeButton = document.getElementById("homeButton")!;
 
+const searchInput = document.getElementById('searchInput')!;
+searchInput.addEventListener('input', debounce(performSearch, 500));
+
 const playButton = document.getElementById("playButton")!;
 const shuffleButton = document.getElementById("shuffleButton")!;
 const skipPreviousButton = document.getElementById("previousTrackButton")!;
@@ -41,8 +43,6 @@ let queue: string[] = []
 let position = 0
 let loopMode = 'none';
 let shuffleMode = false;
-
-console.log(localStorage.getItem("songIsPlaying"))
 
 const updateButtonContent = () => {
   playButton.innerHTML = globalState.songIsPlaying ? `<img src="${pauseIcon}" alt="Pause Icon">` : `<img src="${playIcon}" alt="Play Icon">`;
@@ -72,6 +72,7 @@ function renderPublicSection(render: boolean): void {
 function initPrivateSection(profile?: UserProfile): void {
   renderPrivateSection(!!profile);
   renderPlaylistDetail(false);
+  renderSearchSection(false);
   renderSavedSongs(false);
   renderSavedSongsDetail(false);
   initMenuSection();
@@ -92,6 +93,15 @@ function initMenuSection(): void {
     renderPlaylistDetail(false);
     renderSavedSongsDetail(false);
     renderSavedSongs(false);
+    renderSearchSection(false);
+  });
+
+  searchInput.addEventListener("focus", () => {
+    renderSearchSection(true);
+    renderPlaylistsSection(false);
+    renderPlaylistDetail(false);
+    renderSavedSongs(false);
+    renderSavedSongsDetail(false);
   });
 
   document.getElementById("savedSongsButton")!.addEventListener("click", () => {
@@ -100,20 +110,26 @@ function initMenuSection(): void {
     renderSavedSongsDetail(true);
     renderPlaylistsSection(false);
     renderPlaylistDetail(false);
+    renderSearchSection(false);
   });
   
   document.getElementById("profileButton")!.addEventListener("click", () => {
     renderProfileSection(profileSection.style.display !== "none");
     renderPlaylistDetail(false);
     renderPlaylistsSection(false)
+    renderSearchSection(false);
   });
+
   document.getElementById("playlistsButton")!.addEventListener("click", () => {
     renderPlaylistsSection(true);
     renderPlaylistDetail(false)
     renderSavedSongs(false);
     renderSavedSongsDetail(false);
+    renderSearchSection(false);
   });
+
   document.getElementById("logoutButton")!.addEventListener("click", logout);
+
 }
 
 function initProfileSection(profile?: UserProfile | undefined) {
@@ -178,7 +194,12 @@ function renderPlaylistDetail(render: boolean) {
   playlistDetail.style.display = render ? "block" : "none";
 }
 
-async function startPlayback(tracks) {
+function renderSearchSection(render: boolean) {
+  const searchSection = document.getElementById("searchSection")!;
+  searchSection.style.display = render ? "block" : "none";
+}
+
+async function startPlayback(tracks: any) {
   if (tracks.length > 0) {
     let tracksToPlay = shuffleMode ? shuffleArray(tracks) : tracks;
     await playTrack(tracksToPlay[position]);
@@ -295,7 +316,7 @@ async function renderPlaylists(playlists: PlaylistRequest) {
   });
 }
 
-function renderPlaylistPlayButton(tracks) {
+function renderPlaylistPlayButton(tracks: any) {
   const playPlaylistButton = document.getElementById("playPlaylistButton")!;
   playPlaylistButton.innerHTML = `<img src="${playSecondaryIcon}" alt="Play Icon">`;
 
@@ -308,7 +329,7 @@ function renderPlaylistPlayButton(tracks) {
     position = 0;
     startPlayback(queue);
     console.log({queue})
-    isPlaying = true;
+    // isPlaying = true;
     updateButtonContent(); 
   });
 }
@@ -321,8 +342,10 @@ function renderSavedSongsPlayButton(tracks: PlaylistTracks) {
     throw new Error("Element not found");
   }
   playSavedSongsButton.addEventListener("click", async () => {
-    const uris = tracks.items.map(trackItem => trackItem.track.uri);
-    startPlayback(uris);
+    queue = tracks.items.map(trackItem => trackItem.track);
+    position = 0;
+    startPlayback(queue);
+    // isPlaying = true;
     updateButtonContent(); 
   });
 }
@@ -351,13 +374,20 @@ async function renderTracks(tracks: PlaylistTracks, element: string): Promise<vo
 
   const trackItemsHTML = await Promise.all(tracks.items.map(async (trackItem) => {
     const track = trackItem.track;
+    console.log(track)
     const coverUrl = await getTrackCover(track.id);
     return `
     <li data-track-id="${track.id}" class="track-item">
               <img src="${coverUrl}" alt="Cover" style="width: 50px; height: 50px;">
-              <div>
+              <div class="track-item-info">
                 <p>${track.name}</p>
                 <p>${track.artists.map(artist => artist.name).join(', ')}</p>
+              </div>
+              <div class="track-item-album">
+                ${track.album.name}
+              </div>
+              <div class="track-item-album-artist">
+                ${track.album.artists[0].name}
               </div>
             </li>
             `;
@@ -372,7 +402,7 @@ async function renderTracks(tracks: PlaylistTracks, element: string): Promise<vo
         const track = tracks.items.find(trackItem => trackItem.track.id === trackId)?.track;
         if (track) {
           await playTrack(track);
-          isPlaying = true;
+          // isPlaying = true;
           updateButtonContent();
         }
       }
@@ -438,6 +468,38 @@ function initActionsSection(): void {
 
 function renderActionsSection(render: boolean) {
   actionsSection.style.display = render ? "block" : "none";
+}
+
+// Debounce para evitar utilizar un botón y no hacer muchas llamada a la API por cada caracter introducido
+function debounce<T extends (...args: any[]) => any>(func: T, wait: number): (...funcArgs: Parameters<T>) => void {
+  let timeout: ReturnType<typeof setTimeout> | null = null;
+  return function(...args: Parameters<T>): void {
+    const later = () => {
+      timeout = null;
+      func(...args);
+    };
+    if (timeout !== null) {
+      clearTimeout(timeout);
+    }
+    timeout = setTimeout(later, wait);
+  };
+}
+
+async function performSearch() {
+  const inputElement = document.getElementById('searchInput') as HTMLInputElement;
+  const query = inputElement.value;
+  if (query) {
+    try {
+      const response = await searchTracks(query);
+      const playlistTracks: PlaylistTracks = {
+        total: response.tracks.total,
+        items: response.tracks.items.map(item => ({ track: item }))
+      };
+      renderTracks(playlistTracks, "searchResultsTracks");
+    } catch (error) {
+      console.error('Error buscando canciones:', error);
+    }
+  }
 }
 
 document.addEventListener("DOMContentLoaded", init);
