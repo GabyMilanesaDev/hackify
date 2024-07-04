@@ -452,6 +452,12 @@ button:focus-visible {
 	color: white
 }
 
+.track-list-container {
+	top: 50px;
+	position: absolute;
+	color: white;
+}
+
 @media (prefers-color-scheme: light) {
 	:root {
 		color: #213547;
