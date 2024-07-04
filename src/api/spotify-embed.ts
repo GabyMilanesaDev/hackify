@@ -16,12 +16,14 @@ export function initPlayer(el: HTMLElement): void {
       EmbedController = EmbedController_;
        EmbedController.addListener('playback_update', (event: any) => {
         if (event.data.isPaused && event.data.position === 0) {
-          // console.log('La canción ha terminado');
+          console.log('La canción ha terminado');
           songEnded = true;
           songIsPlaying = false
         } else if (!event.data.isPaused && event.data.position > 0) {
+          console.log('La canción está sonando')
           songIsPlaying = true
         } else if (event.data.isPaused && event.data.position > 0) {
+          console.log('La canción está pausada')
           songIsPlaying = false
         }
       });

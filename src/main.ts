@@ -32,6 +32,14 @@ let position = 0
 let loopMode = 'none';
 let shuffleMode = false;
 
+console.log('Estado de songIsPlaying:', songIsPlaying);
+
+if (songIsPlaying) {
+  console.log('La canción está reproduciéndose.');
+} else {
+  console.log('No hay ninguna canción reproduciéndose.');
+}
+
 const updateButtonContent = () => {
   playButton.innerHTML = isPlaying ? `<img src="${pauseIcon}" alt="Pause Icon">` : `<img src="${playIcon}" alt="Play Icon">`;
 };
@@ -278,7 +286,6 @@ function renderPlaylistPlayButton(tracks) {
     position = 0;
     startPlayback(queue);
     console.log({queue})
-
     isPlaying = true;
     updateButtonContent(); 
   });
