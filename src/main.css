@@ -2,6 +2,11 @@
 	display: none;
 }
 
+
+body {
+	margin: 0;
+	padding: 0;
+}
 /* hack, intencionalmente oculto, con display none no funciona */
 iframe {
 	top: 0;
@@ -42,6 +47,7 @@ body {
 	place-items: flex-start;
 	min-width: 320px;
 	min-height: 100vh;
+	background-color: #242424;
 }
 
 h1 {
@@ -108,3 +114,40 @@ button:focus-visible {
 		background-color: #f9f9f9;
 	}
 }
+
+nav {
+	position: sticky;
+	width: 100%;
+}
+.navbar-container {
+	display: flex;
+	align-items: center;
+	background: black;
+	color: white;
+	width: 100%;
+	padding: 10px;
+}
+
+.navbar-container .navbar-item {
+	flex: 1;
+	display: flex;
+	align-items: center;
+
+}
+
+.navbar-container .navbar-item .input-second-item {
+	padding: 10px;
+	border-radius: 10px;
+}
+
+.last-item {
+	display: flex;
+	justify-content: flex-end;
+
+	.name-container {
+		margin-right: 6px;
+	}
+
+}
+
+/* los estilos se predefiniran el ultimo dia */
