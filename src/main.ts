@@ -419,6 +419,8 @@ function shuffleArray(array: any) {
   return newArray;
 }
 
+
+
 function initActionsSection(): void {
 
   skipPreviousButton.innerHTML = `<img src="${skipPreviousIcon}" alt="Skip Previous Icon">`;
@@ -496,6 +498,7 @@ async function performSearch() {
         items: response.tracks.items.map(item => ({ track: item }))
       };
       renderTracks(playlistTracks, "searchResultsTracks");
+      inputElement.value = '';
     } catch (error) {
       console.error('Error buscando canciones:', error);
     }

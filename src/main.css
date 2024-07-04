@@ -89,6 +89,8 @@ body {
 
   .sidebar {
 	width: 15%;
+	min-width: 150px;
+	/* max-width: 270px; */
 	background-color: black;
 	display: flex;
 	font-size: 1.5em;
@@ -200,7 +202,7 @@ button {
 	font-size: 1em;
 	font-weight: 500;
 	font-family: inherit;
-	background-color: #1a1a1a;
+	background-color: transparent;
 	cursor: pointer;
 	transition: background-color 0.25s;
 }
@@ -324,21 +326,21 @@ button {
 	width: fit-content;
 	margin: auto;
 	gap: 1rem;
-}
-
-.progress-container p {
+  }
+  
+  .progress-container p {
 	font-weight: normal !important;
 	color: inherit !important;
-} 
-
-.progress-bar {
+  } 
+  
+  .progress-bar {
 	position: relative;
 	width: 500px;
 	height: 2px;
 	border-radius: 1rem;
 	background-color: #777777;
   }
-
+  
   .progress-fill {
 	position: absolute;
 	border-radius: 1rem;
@@ -348,6 +350,18 @@ button {
 	background-color: #EAFD31;
 	width: 0%;
   }
+  
+  .progress-ball {
+	width: 10px;
+	height: 10px;
+	background-color: white;
+	border-radius: 50%;
+	position: absolute;
+	top: -4px;
+	transform: translateX(-25%);
+	cursor: pointer;
+  }
+  
 
 .player-actions button {
 	color: transparent;
