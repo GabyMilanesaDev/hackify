@@ -70,7 +70,6 @@ export async function playTrack(track: Track): Promise<void> {
 
     const onPlaybackUpdate = (event: any) => {
       if (event.data.isPaused && event.data.position === 0) {
-        console.log('La canción ha terminado');
         EmbedController.removeListener('playback_update', onPlaybackUpdate);
         resolve();
       } else if (!event.data.isPaused && event.data.position > 0) {
@@ -78,8 +77,6 @@ export async function playTrack(track: Track): Promise<void> {
         currentSongDuration = event.data.duration;
         progressPosition.innerText = formatDuration(currentSongPosition)
         progressDuration.innerText = formatDuration(currentSongDuration)
-
-
       }
     };
 

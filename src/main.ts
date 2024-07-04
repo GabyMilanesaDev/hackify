@@ -65,7 +65,6 @@ function initPrivateSection(profile?: UserProfile): void {
   initMenuSection();
   initProfileSection(profile);
   initPlaylistSection(profile);
-  initUserSavedSongs();
   initActionsSection();
 }
 
@@ -79,9 +78,12 @@ function initMenuSection(): void {
     renderProfileSection(!false);
     renderPlaylistsSection(true);
     renderPlaylistDetail(false);
+    renderSavedSongsDetail(false);
+    renderSavedSongs(false);
   });
 
   document.getElementById("savedSongsButton")!.addEventListener("click", () => {
+    initUserSavedSongs();
     renderSavedSongs(false);
     renderSavedSongsDetail(true);
     renderPlaylistsSection(false);
@@ -96,6 +98,8 @@ function initMenuSection(): void {
   document.getElementById("playlistsButton")!.addEventListener("click", () => {
     renderPlaylistsSection(true);
     renderPlaylistDetail(false)
+    renderSavedSongs(false);
+    renderSavedSongsDetail(false);
   });
   document.getElementById("logoutButton")!.addEventListener("click", logout);
 }
@@ -138,8 +142,7 @@ function initPlaylistSection(profile?: UserProfile): void {
 function initUserSavedSongs(): void {
   getUserSavedTracks(localStorage.getItem("accessToken")!)
     .then((tracks: PlaylistTracks): void => {
-      // renderTracks(tracks);
-      console.log(tracks);
+      renderTracks(tracks);
       document.getElementById("totalSavedSongs")!.innerText = `· ${tracks.total.toString()} canciones`;
     });
 }
@@ -313,13 +316,16 @@ async function renderTracks(tracks: PlaylistTracks): Promise<void> {
   const trackItemsHTML = await Promise.all(tracks.items.map(async (trackItem) => {
     const track = trackItem.track;
     const coverUrl = await getTrackCover(track.id);
-    return `<li data-track-id="${track.id}" class="track-item">
+    return `
+
+    <li data-track-id="${track.id}" class="track-item">
               <img src="${coverUrl}" alt="Cover" style="width: 50px; height: 50px;">
               <div>
                 <p>${track.name}</p>
                 <p>${track.artists.map(artist => artist.name).join(', ')}</p>
               </div>
-            </li>`;
+            </li>
+            `;
   }));
 
   tracksElement.innerHTML = trackItemsHTML.join('');

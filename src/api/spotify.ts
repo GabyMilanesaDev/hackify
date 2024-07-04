@@ -105,7 +105,7 @@ export async function getTrackCover(trackId: string): Promise<string> {
 }
 
 export async function getUserSavedTracks(token: string): Promise<PlaylistTracks> {
-  const result = await fetch(`${api}/v1/me/tracks?limit=10`, {
+  const result = await fetch(`${api}/v1/me/tracks?limit=20`, {
     method: "GET", 
     headers: { Authorization: `Bearer ${token}` }
   });

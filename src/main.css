@@ -87,6 +87,7 @@ body {
 	background-color: transparent;
 	width: 100%;
 	height: 100%;
+	position: absolute;
   }
 
   .sidebar {
@@ -118,6 +119,7 @@ body {
   }
 
   .header {
+	/* position: relative; */
 	height: 10%;
 	background-color: black;
 	display: flex;
@@ -167,8 +169,11 @@ body {
   }
 
 .footer {
-	height: 10%;
-	position: sticky;
+	height: 100%;
+	width: 100%;
+	position: relative;
+	bottom: 0;
+	z-index: 10;
 }
 
 .logo {
@@ -292,12 +297,13 @@ button:focus-visible {
 }
 
 .player {
-	position: sticky;
+	position: absolute;
 	bottom: 0;
 	background-color: #171717;
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	width: 100%;
 	/* padding: 0 0.5rem; */
 	/* background-color: red; */
 }
@@ -376,9 +382,15 @@ button:focus-visible {
 	border-radius: 100%;
 }
 
+.track-container {
+	max-height: 400px;
+	overflow-y: auto;
+	margin-bottom: 90px;
+}
+
 .trackInfo {
 	display: flex;
-	line-height: 0.3;
+	/* line-height: 0.3; */
 	gap: 0.75rem;
 	align-items: center;
 	color: #A7A7A7;
@@ -398,14 +410,13 @@ button:focus-visible {
 
 .track-item {
 	display: flex;
-	line-height: 0.3;
+	/* line-height: 0.3; */
 	gap: 0.75rem;
 	align-items: center;
 	color: #A7A7A7;
 	padding: 0.25rem;
 	transition-duration: 0.25s;
     transition-timing-function: ease-in-out;
-
 }
 
 .track-item:hover {
