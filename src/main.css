@@ -249,7 +249,7 @@ button:focus-visible {
 .playlist-hero {
     background-image: url('/playlist-frame.svg');
     display: flex;
-	min-width: inherit;
+	min-width: 100%;
 	padding: 1rem;
     align-items: center;
     margin-top: 20px;
@@ -363,6 +363,17 @@ button:focus-visible {
 .secondary-action-button {
     fill: greenyellow;
 	color: greenyellow
+}
+
+.saved-songs-total-details {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 4px;
+}
+
+.saved-songs-total-details img {
+	border-radius: 100%;
 }
 
 .trackInfo {

@@ -13,7 +13,7 @@ export async function redirectToProvider(): Promise<void> {
   params.append("client_id", import.meta.env.VITE_CLIENTID);
   params.append("response_type", "code");
   params.append("redirect_uri", import.meta.env.VITE_URI_CALLBACK);
-  params.append("scope", "user-read-private user-read-email");
+  params.append("scope", "user-read-private user-read-email user-library-read user-read-playback-state");
   params.append("code_challenge_method", "S256");
   params.append("code_challenge", challenge);
 
@@ -106,7 +106,8 @@ export async function getTrackCover(trackId: string): Promise<string> {
 
 export async function getUserSavedTracks(token: string): Promise<PlaylistTracks> {
   const result = await fetch(`${api}/v1/me/tracks?limit=10`, {
-    method: "GET", headers: { Authorization: `Bearer ${token}` }
+    method: "GET", 
+    headers: { Authorization: `Bearer ${token}` }
   });
 
   return await result.json();

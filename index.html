@@ -24,7 +24,7 @@
     <button id="homeButton">
       <img src="/home.svg" height="16px" alt="Home" >Home
     </button>
-<button>
+<button id="savedSongsButton">
   <img src="/saved-songs.svg" height="16px" width="16px" alt="My favorites" >My favorites
 </button>
 <button id="playlistsButton">
@@ -63,6 +63,28 @@
           <li>Link: <a id="url" href="#"></a></li>
         </ul>
       </section>
+
+      <section id="savedSongs">
+        <h2>Mis favoritos</h2>
+        <ul id="songs" class="my-playlists"></ul>  
+      </section>
+
+      <section id="savedSongsDetail">
+        <div id="savedSongsHero" class="playlist-hero">
+            <img src="/saved-songs.webp" alt="Saved songs cover" height="250px" width="250px">
+            <div class="playlist-hero-info">
+              <p>Playlist</p>
+              <h2>Canciones que te gustan</h2>
+              <div class="saved-songs-total-details">
+                <img id="savedSongsProfilePicture" width="24px" height="24px">
+                <p id="savedSongsProfileName"></p>
+                <p id="totalSavedSongs"></p>
+              </div>
+              <button id="savedSongsButton" class="playButton"></button>
+            </div>
+          </div>
+          <ol id="savedSongs-tracks"></ol>
+        </section>
 
       <section id="playlistsSection" >
         <h2>Mis playlists</h2>

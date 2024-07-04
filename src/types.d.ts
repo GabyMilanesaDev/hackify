@@ -37,6 +37,7 @@ type PlaylistRequest = {
 };
 
 type PlaylistTracks = {
+  total: number;
   items: TrackItem[];
 };
 

@@ -60,9 +60,12 @@ function renderPublicSection(render: boolean): void {
 function initPrivateSection(profile?: UserProfile): void {
   renderPrivateSection(!!profile);
   renderPlaylistDetail(false);
+  renderSavedSongs(false);
+  renderSavedSongsDetail(false);
   initMenuSection();
   initProfileSection(profile);
   initPlaylistSection(profile);
+  initUserSavedSongs();
   initActionsSection();
 }
 
@@ -75,6 +78,13 @@ function initMenuSection(): void {
   homeButton.addEventListener("click", () => {
     renderProfileSection(!false);
     renderPlaylistsSection(true);
+    renderPlaylistDetail(false);
+  });
+
+  document.getElementById("savedSongsButton")!.addEventListener("click", () => {
+    renderSavedSongs(false);
+    renderSavedSongsDetail(true);
+    renderPlaylistsSection(false);
     renderPlaylistDetail(false);
   });
   
@@ -110,7 +120,9 @@ function renderProfileData(profile: UserProfile) {
   document.getElementById("url")!.innerText = profile.href;
   document.getElementById("url")!.setAttribute("href", profile.href);
   document.getElementById("profilePicture")!.setAttribute("src", profile.images[0].url);
+  document.getElementById("savedSongsProfilePicture")!.setAttribute("src", profile.images[0].url);
   document.getElementById("profileName")!.innerText = profile.display_name;
+  document.getElementById("savedSongsProfileName")!.innerText = profile.display_name;
 }
 
 function initPlaylistSection(profile?: UserProfile): void {
@@ -121,6 +133,25 @@ function initPlaylistSection(profile?: UserProfile): void {
         renderPlaylists(playlists);
       });
   }
+}
+
+function initUserSavedSongs(): void {
+  getUserSavedTracks(localStorage.getItem("accessToken")!)
+    .then((tracks: PlaylistTracks): void => {
+      // renderTracks(tracks);
+      console.log(tracks);
+      document.getElementById("totalSavedSongs")!.innerText = `· ${tracks.total.toString()} canciones`;
+    });
+}
+
+function renderSavedSongs(render: boolean) {
+  const savedSongsSection = document.getElementById("savedSongs")!;
+  savedSongsSection.style.display = render ? "block" : "none";
+}
+
+function renderSavedSongsDetail(render: boolean) {
+  const savedSongsDetail = document.getElementById("savedSongsDetail")!;
+  savedSongsDetail.style.display = render ? "block" : "none";
 }
 
 function renderPlaylistsSection(render: boolean) {
@@ -241,6 +272,22 @@ function renderPlaylistPlayButton(tracks: PlaylistTracks) {
   });
 }
 
+function renderSavedSongsPlayButton(tracks: PlaylistTracks) {
+  const playSavedSongsButton = document.getElementById("savedSongsButton")!;
+  playSavedSongsButton.innerHTML = `<img src="${playSecondaryIcon}" alt="Play Icon">`;
+
+  if (!playSavedSongsButton) {
+    throw new Error("Element not found");
+  }
+  playSavedSongsButton.addEventListener("click", async () => {
+    const uris = tracks.items.map(trackItem => trackItem.track.uri);
+    startPlayback(uris);
+    // togglePlay();
+
+    updateButtonContent(); 
+  });
+}
+
 async function loadPlaylistTracks(playlistId: string): Promise<void> {
   try {
     const token = localStorage.getItem("accessToken")!;
@@ -265,7 +312,7 @@ async function renderTracks(tracks: PlaylistTracks): Promise<void> {
 
   const trackItemsHTML = await Promise.all(tracks.items.map(async (trackItem) => {
     const track = trackItem.track;
-    const coverUrl = await getTrackCover(track.id); // Suponiendo que obtienes la URL de la portada de alguna función getTrackCover
+    const coverUrl = await getTrackCover(track.id);
     return `<li data-track-id="${track.id}" class="track-item">
               <img src="${coverUrl}" alt="Cover" style="width: 50px; height: 50px;">
               <div>

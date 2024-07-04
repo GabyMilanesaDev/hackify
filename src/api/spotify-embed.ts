@@ -68,8 +68,6 @@ export async function playTrack(track: Track): Promise<void> {
     trackArtist.innerText = track.artists.map(artist => artist.name).join(', ');
     document.title = track.name;
 
-
-
     const onPlaybackUpdate = (event: any) => {
       if (event.data.isPaused && event.data.position === 0) {
         console.log('La canción ha terminado');
