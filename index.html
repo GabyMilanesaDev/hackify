@@ -5,8 +5,33 @@
   <title>My Spotify Profile</title>
   <script src="src/main.ts" type="module"></script>
   <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
+  <link rel="stylesheet" href="./src/main.css">
 </head>
 <body>
+  <nav >
+    <div class="navbar-container">
+
+      <div class="navbar-item">
+        Home &gt; Popular artist
+      </div>
+
+      <div class="navbar-item">
+        <input type="text" placeholder="Search music, artist, albums..." class="input-second-item" >
+      </div>
+
+      <div class="navbar-item last-item">
+        <div class="name-container">
+          <span>Maya</span>
+        </div>
+
+        <div>
+          <button>Logout</button>
+        </div>
+      </div>
+
+    </div>
+  </nav>
+
 <section id="publicSection">
   Sector publico: <br>
   <button id="loginButton">Login</button>
@@ -41,5 +66,8 @@
     <div id="embed-iframe"></div>
   </section>
 </section>
+<footer>
+
+</footer>
 </body>
 </html>
