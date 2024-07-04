@@ -1,6 +1,6 @@
 import './main.css';
 import { init as authenticatorInit, login, logout } from './auth';
-import { getMyPlaylists, initPlayer, playTrack, togglePlay, getPlaylist, getPlaylistTracks, getPlaylistCover, getTrackCover, getUserSavedTracks } from './api';
+import { getMyPlaylists, initPlayer, playTrack, togglePlay, getPlaylist, getPlaylistTracks, getPlaylistCover, getTrackCover, getUserSavedTracks, songIsPlaying } from './api';
 
 import playIcon from '/play.svg';
 import playSecondaryIcon from '/play-playlist.svg';
@@ -28,8 +28,11 @@ const repeatButton = document.getElementById("repeatButton")!;
 
 let isPlaying = false;
 let queue: string[] = []
-console.log(queue)
 let position = 0
+let loopMode = 'none';
+console.log({queue})
+console.log({loopMode})
+console.log({songIsPlaying})
 
 const updateButtonContent = () => {
   playButton.innerHTML = isPlaying ? `<img src="${pauseIcon}" alt="Pause Icon">` : `<img src="${playIcon}" alt="Play Icon">`;
@@ -43,15 +46,12 @@ async function init() {
   } catch (error) {
     console.error(error);
   }
-
-  console.log(profile)
   initPublicSection(profile);
   initPrivateSection(profile);
 }
 
 function initPublicSection(profile?: UserProfile): void {
   document.getElementById("loginButton")!.addEventListener("click", login);
-  console.log(!profile)
   renderPublicSection(!profile);
 }
 
@@ -60,7 +60,6 @@ function renderPublicSection(render: boolean): void {
 }
 
 function initPrivateSection(profile?: UserProfile): void {
-  console.log(!profile)
   renderPrivateSection(!!profile);
   renderPlaylistDetail(false);
   renderSavedSongs(false);
@@ -169,38 +168,42 @@ function renderPlaylistDetail(render: boolean) {
   playlistDetail.style.display = render ? "block" : "none";
 }
 
-//  async function startPlayback(uris: string[]): Promise<void> {
-//   queue = uris
-//   playTrack(uris[position]);
-
-
-//   console.log(songEnded)
-
-//   if (songEnded) {
-//     for (let i = 0; i < uris.length; i++) {
-//       playTrack(uris[position]);
-//    }
-//   }
-
-
-// }
-
-async function startPlayback(uris: string[]): Promise<void> {
-  queue = uris;
-  position = 0; 
-  await playNextTrack();
+async function startPlayback(tracks) {
+  if (tracks.length > 0) {
+    await playTrack(tracks[position]);
+  }
 }
 
-async function playNextTrack(): Promise<void> {
-  if (position >= queue.length) {
-    console.log('Todas las canciones han sido reproducidas');
-    return;
+function skipTrack() {
+  if (loopMode === 'one') {
+    playTrack(queue[position]);
+  } else {
+    if (position < queue.length - 1) {
+      position++;
+      playTrack(queue[position]);
+    } else {
+      if (loopMode === 'all') {
+        position = 0;
+        playTrack(queue[position]);
+      }
+    }
   }
+}
 
-  // await playTrack(queue[position]);
-  position++;
-
-  await playNextTrack();
+function skipPreviousTrack() {
+  if (loopMode === 'one') {
+    playTrack(queue[position]);
+  } else {
+    if (position > 0) {
+      position--;
+      playTrack(queue[position]);
+    } else {
+      if (loopMode === 'all') {
+        position = queue.length - 1;
+        playTrack(queue[position]);
+      }
+    }
+  }
 }
 
 function renderPlaylistCover(playlistId: string) {
@@ -262,17 +265,18 @@ async function renderPlaylists(playlists: PlaylistRequest) {
   });
 }
 
-function renderPlaylistPlayButton(tracks: PlaylistTracks) {
+function renderPlaylistPlayButton(tracks) {
   const playPlaylistButton = document.getElementById("playPlaylistButton")!;
   playPlaylistButton.innerHTML = `<img src="${playSecondaryIcon}" alt="Play Icon">`;
 
   if (!playPlaylistButton) {
     throw new Error("Element not found");
   }
+
   playPlaylistButton.addEventListener("click", async () => {
-    const uris = tracks.items.map(trackItem => trackItem.track.uri);
-    startPlayback(uris);
-    // togglePlay();
+    queue = tracks.items.map(trackItem => trackItem.track);
+    position = 0;
+    startPlayback(queue);
 
     isPlaying = true;
     updateButtonContent(); 
@@ -340,7 +344,6 @@ async function renderTracks(tracks: PlaylistTracks, element: string): Promise<vo
         const track = tracks.items.find(trackItem => trackItem.track.id === trackId)?.track;
         if (track) {
           await playTrack(track);
-          // togglePlay();
           isPlaying = true;
           updateButtonContent();
         }
@@ -348,20 +351,6 @@ async function renderTracks(tracks: PlaylistTracks, element: string): Promise<vo
     });
   });
 }
-
-// function skipNextTrack() {
-//   position += 1
-//   playTrack(queue[position]);
-// }
-
-// function skipPreviousTrack() {
-//   if (position === 0) {
-//     position = 0
-//   } else {
-//     position -= 1
-//   }
-//   playTrack(queue[position]);
-// }
 
 function initActionsSection(): void {
 
@@ -372,19 +361,31 @@ function initActionsSection(): void {
 
   playButton.addEventListener("click", () => {
     togglePlay();
-    isPlaying = !isPlaying;
+    if (songIsPlaying) {  
+      isPlaying = true;
+    } else if (!songIsPlaying) {
+      isPlaying = false;
+    }
     updateButtonContent(); 
   });
 
   skipPreviousButton.addEventListener("click", () => {
     skipPreviousTrack();
-    // togglePlay();
-  }
-  );
+  });
 
   skipNextButton.addEventListener("click", () => {
-    skipNextTrack();
-    // togglePlay();
+    skipTrack();
+  });
+
+  shuffleButton.addEventListener("click", () => {
+    console.log("click")
+    // if (loopMode === 'none') {
+    //   loopMode = 'all';
+    // } else if (loopMode === 'all') {
+    //   loopMode = 'one';
+    // } else {
+    //   loopMode = 'none';
+    // }
   });
 
   updateButtonContent();

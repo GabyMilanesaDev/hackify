@@ -1,6 +1,5 @@
 export let songEnded: boolean = false;
-let currentSongDuration: number = 0;
-let currentSongPosition: number = 0;
+export let songIsPlaying: boolean = false;
 let EmbedController: any = undefined;
 
 // Player embed (modo gratuito)
@@ -15,13 +14,15 @@ export function initPlayer(el: HTMLElement): void {
     };
     let callback = (EmbedController_: any) => {
       EmbedController = EmbedController_;
-
        EmbedController.addListener('playback_update', (event: any) => {
         if (event.data.isPaused && event.data.position === 0) {
-          console.log('La canción ha terminado');
+          // console.log('La canción ha terminado');
           songEnded = true;
+          songIsPlaying = false
         } else if (!event.data.isPaused && event.data.position > 0) {
-          console.log('La canción ha comenzado a reproducirse');
+          songIsPlaying = true
+        } else if (event.data.isPaused && event.data.position > 0) {
+          songIsPlaying = false
         }
       });
 
@@ -30,28 +31,8 @@ export function initPlayer(el: HTMLElement): void {
   };
 }
 
-// export async function playTrack(uri: string): Promise<void> {
-//   return new Promise((resolve) => {
-//     EmbedController.loadUri(uri);
-//     EmbedController.play();
-
-//     // Añadir listener para el evento playback_update
-//     const onPlaybackUpdate = (event: any) => {
-//       console.log(event.data)
-//       if (event.data.isPaused && event.data.position === 0) {
-//         console.log('La canción ha terminado');
-//         EmbedController.removeListener('playback_update', onPlaybackUpdate);
-//         resolve();
-//       } else if (!event.data.isPaused && event.data.position > 0) {
-//         console.log('La canción ha comenzado a reproducirse');
-//       }
-//     };
-
-//     EmbedController.addListener('playback_update', onPlaybackUpdate);
-//   });
-// }
-
 export async function playTrack(track: Track): Promise<void> {
+
   return new Promise((resolve) => {
     EmbedController.loadUri(track.uri); 
     EmbedController.play();
@@ -73,10 +54,10 @@ export async function playTrack(track: Track): Promise<void> {
         EmbedController.removeListener('playback_update', onPlaybackUpdate);
         resolve();
       } else if (!event.data.isPaused && event.data.position > 0) {
-        currentSongPosition = event.data.position;
-        currentSongDuration = event.data.duration;
-        progressPosition.innerText = formatDuration(currentSongPosition)
-        progressDuration.innerText = formatDuration(currentSongDuration)
+        const currentSongPosition = event.data.position;
+        const currentSongDuration = event.data.duration;
+        progressPosition.innerText = formatDuration(currentSongPosition);
+        progressDuration.innerText = formatDuration(currentSongDuration);
         const percentage = (currentSongPosition / currentSongDuration) * 100;
         progressFill.style.width = `${percentage}%`;
       }
