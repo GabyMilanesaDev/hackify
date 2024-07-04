@@ -3,7 +3,7 @@ import { generateCodeChallenge, generateCodeVerifier } from "../utils";
 const apiAccount = 'https://accounts.spotify.com'
 const api = 'https://api.spotify.com'
 
-const limit = '?limit=10'
+const limit = 'limit=10'
 
 export async function redirectToProvider(): Promise<void> {
   const verifier = generateCodeVerifier(128);
@@ -57,7 +57,7 @@ export async function getProfile(token: string): Promise<UserProfile> {
 }
 
 export async function getMyPlaylists(token: string): Promise<PlaylistRequest> {
-  const result = await fetch(`${api}/v1/me/playlists${limit}`, {
+  const result = await fetch(`${api}/v1/me/playlists?${limit}`, {
     method: "GET", headers: { Authorization: `Bearer ${token}` }
   });
   return await result.json();
@@ -77,7 +77,7 @@ export async function getPlaylist(token: string, playlistId: string): Promise<Pl
 }
 
 export async function getPlaylistTracks(token: string, playlistId: string): Promise<PlaylistTracks> {
-  const result = await fetch(`${api}/v1/playlists/${playlistId}/tracks${limit}`, {
+  const result = await fetch(`${api}/v1/playlists/${playlistId}/tracks?${limit}`, {
     method: "GET", headers: { Authorization: `Bearer ${token}` }
   });
 
@@ -107,7 +107,7 @@ export async function getTrackCover(trackId: string): Promise<string> {
 }
 
 export async function getUserSavedTracks(token: string): Promise<PlaylistTracks> {
-  const result = await fetch(`${api}/v1/me/tracks${limit}`, {
+  const result = await fetch(`${api}/v1/me/tracks?${limit}`, {
     method: "GET", 
     headers: { Authorization: `Bearer ${token}` }
   });
@@ -115,8 +115,14 @@ export async function getUserSavedTracks(token: string): Promise<PlaylistTracks>
   return await result.json();
 }
 
-export async function searchTracks(token: string, query: string): Promise<Track> {
-  const result = await fetch(`${api}/v1/search?q=${query}&type=track${limit}`, {
+// https://api.spotify.com/v1/search?q=en+la+intimidad&type=track&limit=10
+
+// https://api.spotify.com/v1/search?q=en%20la%20intimidad&type=track?limit=10
+
+
+export async function searchTracks(query: string): Promise<TrackResponse> {
+  const token = localStorage.getItem("accessToken")!;
+  const result = await fetch(`${api}/v1/search?q=${query}&type=track&${limit}`, {
     method: "GET", headers: { Authorization: `Bearer ${token}` }
   });
 

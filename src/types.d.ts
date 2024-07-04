@@ -52,11 +52,20 @@ type Track = {
   duration_ms: number;
   artists: Artist[];
   album: {
+    name: string;
+    artists: Artist[];
     images: {
       url: string;
       height: number;
       width: number;
     }[];
+  };
+};
+
+type TrackResponse = {
+  tracks: {
+    items: Track[];
+    total: number;
   };
 };
 

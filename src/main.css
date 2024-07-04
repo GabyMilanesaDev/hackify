@@ -255,7 +255,7 @@ button:focus-visible {
 	/* padding: 1rem; */
 	/* margin: 1rem; */
     align-items: center;
-	margin-bottom: 20px;
+	/* margin-bottom: 20px; */
 }
 
 .playlist-hero-info {
@@ -435,6 +435,31 @@ button:focus-visible {
 	padding: 0.25rem;
 	transition-duration: 0.25s;
     transition-timing-function: ease-in-out;
+}
+
+.track-item-separator {
+	display: flex;
+	align-items: center;
+	/* width: 100%; */
+	background-color: #181818;
+	height: 52px;
+	padding-left: 1.5rem;
+	padding-right: 1.5rem;
+}
+
+.track-item-info {
+	width: 100%;
+	max-width: 50%;
+}
+
+.track-item-album {
+	width: 100%;
+	max-width:25%;
+}
+
+.track-item-album-artist {
+	width: 100%;
+	max-width:25%;
 }
 
 .track-item:hover {

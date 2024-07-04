@@ -36,8 +36,7 @@
   <div class="main">
     <header class="header">
 
-      <input type="text" placeholder="Search music..." id="search-tracks" >
-      <div id="results-tracks-container"></div>
+      <input id="searchInput" type="text" placeholder="Search music...">
 
       <section class="header-profile">
         <img id="profilePicture" width="48px" height="48px">
@@ -52,6 +51,7 @@
 
     </header>
     <section id="privateSection" class="content">
+
       <section id="profileSection">
         <h1>Display your Spotify profile data</h1>
         <h2>Logged in as <span id="displayName"></span></h2>
@@ -61,6 +61,24 @@
           <li>Spotify URI: <a id="uri" href="#"></a></li>
           <li>Link: <a id="url" href="#"></a></li>
         </ul>
+      </section>
+
+      <section id="searchSection">
+        <h2>Search results</h2>
+        <!-- <ul id="searchResultsList"></ul> -->
+
+        <div class="track-item-separator">
+          <p class="track-item-info"># Song</p>
+          <p class="track-item-album">Album</p>
+          <p class="track-item-album-artist">Artist</p>
+        </div>
+
+        <div class="track-container">
+          <ol id="searchResultsTracks"></ol>
+        </div>
+
+
+
       </section>
 
       <section id="savedSongs">
@@ -82,6 +100,11 @@
               <button id="playSavedSongsButton" class="playButton"></button>
             </div>
           </div>
+          <div class="track-item-separator">
+            <p class="track-item-info"># Song</p>
+            <p class="track-item-album">Album</p>
+            <p class="track-item-album-artist">Artist</p>
+          </div>
           <div class="track-container">
             <ol id="savedSongsTracks"></ol>
           </div>
@@ -101,6 +124,11 @@
             <p id="playlistDescription"></p>
             <button id="playPlaylistButton" class="playButton"></button>
           </div>
+        </div>
+        <div class="track-item-separator">
+          <p class="track-item-info"># Song</p>
+          <p class="track-item-album">Album</p>
+          <p class="track-item-album-artist">Artist</p>
         </div>
         <div class="track-container">
           <ol id="playlistTracks"></ol>
@@ -145,58 +173,6 @@
   </section>
 </footer>
 
-<!-- 
-  <section id="profileSection">
-    <h1>Display your Spotify profile data</h1>
-    <h2>Logged in as <span id="displayName"></span></h2>
-    <ul>
-      <li>User ID: <span id="id"></span></li>
-      <li>Email: <span id="email"></span></li>
-      <li>Spotify URI: <a id="uri" href="#"></a></li>
-      <li>Link: <a id="url" href="#"></a></li>
-    </ul>
-  </section>
-  <section id="playlistsSection">
-    <p>Mis playlists:</p>
-    <ul id="playlists"></ul>
-    <div class="playlist-hero">
-      <img id="playlistCover" src="" alt="Playlist cover" height="250px" width="250px">
-      <div class="playlist-hero-info">
-        <p>Playlist</p>
-        <h2 id="playlistName"></h2>
-        <p id="playlistDescription"></p>
-        <button id="playPlaylistButton" class="playButton"></button>
-      </div>
-    </div>
-    <ol id="tracks"></ol>
-  </section>
-  <section id="actionsSection" class="player">
-    <div id="trackInfo" class="trackInfo">
-      <img id="trackCover" src="" alt="Track cover" height="64px" width="64px">
-      <div id="trackInfoText">
-        <p id="trackName"></p>
-        <p id="trackArtist"></p>
-      </div>
-      <div class="player-container">
-        <div class="player-actions"> 
-          <button id="shuffleButton"></button>
-          <button id="previousTrackButton"></button>
-          <button id="playButton" class="playButton"></button>
-          <button id="nextTrackButton" class="secondary-action-button"></button>
-          <button id="repeatButton" class="secondary-action-button"></button>
-        </div>
-        <div id="progressContainer" class="progress-container">
-          <p id="progressPosition"></p>
-          <div class="progress-bar">
-            <div class="progress-fill" id="progressFill"></div>
-          </div>
-          <p id="progressDuration"></p>
-        </div>
-      </div>
-    
-  </section>
 
-  sss
-</section> -->
 </body>
 </html>
