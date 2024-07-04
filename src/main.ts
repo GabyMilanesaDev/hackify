@@ -10,6 +10,7 @@ const actionsSection = document.getElementById("actionsSection")!;
 
 
 async function init() {
+  console.log('Holaa')
   let profile: UserProfile | undefined;
   try {
     profile = await authenticatorInit();
