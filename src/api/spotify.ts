@@ -62,4 +62,30 @@ export async function getMyPlaylists(token: string): Promise<PlaylistRequest> {
   return await result.json();
 }
 
-// TODO agregar nuevas funciones para obtener playlists, canciones, etc
+// A partir de aqui puedes saber los datos con detalle de cada playlist
+export async function getPlaylistDetails(token: string, playListLink: string) {
+
+  
+  
+}
+
+export async function getPlaylistCover(token: string, playlistId: string): Promise<string> { 
+  const result = await fetch(`${api}/v1/playlists/${playlistId}/images`, {
+    method: "GET", headers: { Authorization: `Bearer ${token}` }
+  });
+
+  const images = await result.json();
+  return images[0].url;
+  
+}
+
+export async function login() {
+  await redirectToProvider();
+}
+
+export async function logOut() {
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("refresh_Token");
+  localStorage.removeItem("verifier");
+  document.location = "/";
+}
