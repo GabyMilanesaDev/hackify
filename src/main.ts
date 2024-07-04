@@ -342,7 +342,7 @@ function renderSavedSongsPlayButton(tracks: PlaylistTracks) {
     throw new Error("Element not found");
   }
   playSavedSongsButton.addEventListener("click", async () => {
-    queue = tracks.items.map(trackItem => trackItem.track);
+    queue = tracks.items.map(trackItem => trackItem.track.id);
     position = 0;
     startPlayback(queue);
     // isPlaying = true;
