@@ -399,7 +399,12 @@ button:focus-visible {
 	max-height: 400px;
 	overflow-y: auto;
 	margin-bottom: 90px;
+	scrollbar-width: none;
 }
+
+.track-container::-webkit-scrollbar {
+	width: 0;
+  }
 
 .trackInfo {
 	display: flex;
