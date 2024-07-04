@@ -37,21 +37,6 @@ const shuffleButton = document.getElementById("shuffleButton")!;
 const skipPreviousButton = document.getElementById("previousTrackButton")!;
 const skipNextButton = document.getElementById("nextTrackButton")!;
 const repeatButton = document.getElementById("repeatButton")!;
-const searchInput = document.getElementById("search-tracks") as HTMLInputElement;
-
-
-searchInput.addEventListener('input', async () => {
-  const searchText = searchInput.value;
-  if (searchText.length > 2) {
-    try {
-      const tracks = await searchTracks(searchText);
-      renderTracksSearched(tracks)
-
-    } catch (error) {
-      console.log('Error al buscar: ', error)
-    }
-  }
-})
 
 // let isPlaying = false;
 let queue: string[] = []
@@ -79,47 +64,6 @@ function initPublicSection(profile?: UserProfile): void {
   document.getElementById("loginButton")!.addEventListener("click", login);
   renderPublicSection(!profile);
 }
-
-async function searchTracks(searchText: string) {
-  console.log('Adios', searchText)
-  const token = localStorage.getItem('accessToken');
-
-  if (!token) {
-    throw new Error('No access token found');
-  }
-
-  const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(searchText)}&type=track`, {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  });
-
-  if (!response.ok) {
-    throw new Error('Error fetching tracks')
-  }
-
-  const data = await response.json();
-  return data.tracks.items;
-  console.log('data', data)
-
-}
-
-function renderTracksSearched(searchedTracks: any) {
-  console.log('searched', searchTracks)
-  const resultTracksContainer = document.getElementById('results-tracks-container');
-
-  if (!resultTracksContainer) {
-    throw new Error('Not found');
-  }
-  resultTracksContainer.className = "track-list-container";
-  resultTracksContainer.innerHTML = searchedTracks.map((track: any) => `
-    <div>
-      <p> ${track.name} </p>
-    </div>
-    
-    `).join('')
-}
-
 
 function renderPublicSection(render: boolean): void {
   publicSection.style.display = render ? "none" : "block";
@@ -272,7 +216,7 @@ async function startPlayback(tracks: any) {
   }
 }
 
-async function playNextTrack(tracks: any) {
+async function playNextTrack(tracks) {
   if (position < tracks.length) {
     await playTrack(tracks[position]);
     position++; 
@@ -381,7 +325,7 @@ function renderPlaylistPlayButton(tracks: any) {
   }
 
   playPlaylistButton.addEventListener("click", async () => {
-    queue = tracks.items.map((trackItem: any) => trackItem.track);
+    queue = tracks.items.map(trackItem => trackItem.track);
     position = 0;
     startPlayback(queue);
     console.log({queue})
