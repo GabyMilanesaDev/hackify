@@ -1,7 +1,7 @@
 import './main.css';
 import { init as authenticatorInit, login, logout } from './auth';
 import { getMyPlaylists, initPlayer, playTrack, togglePlay, getPlaylist, getPlaylistTracks, getPlaylistCover, getTrackCover, getUserSavedTracks } from './api';
-import { globalState, setSongEnded, setSongIsPlaying } from './utils/globals'
+import { globalState, setSongIsPlaying } from './utils/globals'
 
 console.log({globalState})
 
@@ -10,8 +10,6 @@ if (globalState.songEnded) {
 } else if (globalState.songIsPlaying) {
   console.log('La canción está sonando');
 }
-
-
 
 
 import playIcon from '/play.svg';
@@ -238,7 +236,7 @@ function renderPlaylistDetail(render: boolean) {
   playlistDetail.style.display = render ? "block" : "none";
 }
 
-async function startPlayback(tracks) {
+async function startPlayback(tracks: any) {
   if (tracks.length > 0) {
     let tracksToPlay = shuffleMode ? shuffleArray(tracks) : tracks;
     await playTrack(tracksToPlay[position]);
@@ -255,7 +253,7 @@ async function startPlayback(tracks) {
   }
 }
 
-async function playNextTrack(tracks) {
+async function playNextTrack(tracks: any) {
   if (position < tracks.length) {
     await playTrack(tracks[position]);
     position++; 
@@ -355,7 +353,7 @@ async function renderPlaylists(playlists: PlaylistRequest) {
   });
 }
 
-function renderPlaylistPlayButton(tracks) {
+function renderPlaylistPlayButton(tracks:any) {
   const playPlaylistButton = document.getElementById("playPlaylistButton")!;
   playPlaylistButton.innerHTML = `<img src="${playSecondaryIcon}" alt="Play Icon">`;
 
@@ -364,11 +362,11 @@ function renderPlaylistPlayButton(tracks) {
   }
 
   playPlaylistButton.addEventListener("click", async () => {
-    queue = tracks.items.map(trackItem => trackItem.track);
+    queue = tracks.items.map((trackItem: any) => trackItem.track);
     position = 0;
     startPlayback(queue);
     console.log({queue})
-    isPlaying = true;
+    setSongIsPlaying(true)
     updateButtonContent(); 
   });
 }
@@ -432,7 +430,8 @@ async function renderTracks(tracks: PlaylistTracks, element: string): Promise<vo
         const track = tracks.items.find(trackItem => trackItem.track.id === trackId)?.track;
         if (track) {
           await playTrack(track);
-          isPlaying = true;
+         // isPlaying = true
+          setSongIsPlaying(true);
           updateButtonContent();
         }
       }
