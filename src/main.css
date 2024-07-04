@@ -333,6 +333,7 @@ button:focus-visible {
 
 .progress-container {
 	display: flex;
+	align-items: center;
 	font-size: small;
 	color: #A7A7A7;
 	border: #213547;
@@ -341,16 +342,26 @@ button:focus-visible {
 	gap: 1rem;
 }
 
+.progress-container p {
+	font-weight: normal !important;
+	color: inherit !important;
+} 
+
 .progress-bar {
-	width: 100%;
-	height: 20px;
-	background-color: #ddd;
-	margin-bottom: 10px;
+	position: relative;
+	width: 500px;
+	height: 2px;
+	border-radius: 1rem;
+	background-color: #777777;
   }
 
   .progress-fill {
+	position: absolute;
+	border-radius: 1rem;
+	top: 0;
+	left: 0;
 	height: 100%;
-	background-color: #4caf50;
+	background-color: #EAFD31;
 	width: 0%;
   }
 

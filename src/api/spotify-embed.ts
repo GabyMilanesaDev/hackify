@@ -61,7 +61,7 @@ export async function playTrack(track: Track): Promise<void> {
     const trackArtist = document.getElementById("trackArtist")!;
     const progressPosition = document.getElementById("progressPosition")!;
     const progressDuration = document.getElementById("progressDuration")!;
-    // const progressFill = document.getElementById('progressFill');
+    const progressFill = document.getElementById('progressFill')!;
 
     trackCover.setAttribute("src", track.album.images[0].url);
     trackName.innerText = track.name;
@@ -77,6 +77,8 @@ export async function playTrack(track: Track): Promise<void> {
         currentSongDuration = event.data.duration;
         progressPosition.innerText = formatDuration(currentSongPosition)
         progressDuration.innerText = formatDuration(currentSongDuration)
+        const percentage = (currentSongPosition / currentSongDuration) * 100;
+        progressFill.style.width = `${percentage}%`;
       }
     };
 
