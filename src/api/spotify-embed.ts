@@ -78,8 +78,6 @@ export async function playTrack(track: Track): Promise<void> {
       } else if (!event.data.isPaused && event.data.position > 0) {
         currentSongPosition = event.data.position;
         currentSongDuration = event.data.duration;
-        // console.log(formatDuration(currentSongPosition))
-        // console.log(formatDuration(currentSongDuration))
         progressPosition.innerText = formatDuration(currentSongPosition)
         progressDuration.innerText = formatDuration(currentSongDuration)
 
