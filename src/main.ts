@@ -1,7 +1,7 @@
 import './main.css';
 import { init as authenticatorInit, login, logout } from './auth';
 import { getMyPlaylists, initPlayer, playTrack, togglePlay, getPlaylist, getPlaylistTracks, getPlaylistCover, getTrackCover, getUserSavedTracks, searchTracks } from './api';
-import { globalState, setSongEnded, setSongIsPlaying } from './utils/globals'
+import { globalState, setSongIsPlaying } from './utils/globals'
 
 console.log({globalState})
 
@@ -216,7 +216,7 @@ async function startPlayback(tracks: any) {
   }
 }
 
-async function playNextTrack(tracks) {
+async function playNextTrack(tracks: any) {
   if (position < tracks.length) {
     await playTrack(tracks[position]);
     position++; 
