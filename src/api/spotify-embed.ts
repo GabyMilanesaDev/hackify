@@ -1,5 +1,5 @@
 export let songEnded: boolean = false;
-import { globalState, setSongEnded, setSongIsPlaying } from '../utils/globals'
+import { setSongEnded, setSongIsPlaying } from '../utils/globals'
 let EmbedController: any = undefined;
 
 let currentSongPosition: number = 0;
@@ -42,7 +42,7 @@ export function initPlayer(el: HTMLElement): void {
 }
 
 
-export async function playTrack(track: Track): Promise<void> {
+export async function playTrack(track: any): Promise<void> {
 
   return new Promise((resolve) => {
     EmbedController.loadUri(track.uri); 
@@ -57,7 +57,7 @@ export async function playTrack(track: Track): Promise<void> {
 
     trackCover.setAttribute("src", track.album.images[0].url);
     trackName.innerText = track.name;
-    trackArtist.innerText = track.artists.map(artist => artist.name).join(', ');
+    trackArtist.innerText = track.artists.map((artist:any) => artist.name).join(', ');
     document.title = track.name;
 
     const onPlaybackUpdate = (event: any) => {
