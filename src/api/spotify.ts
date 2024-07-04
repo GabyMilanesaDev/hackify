@@ -75,7 +75,7 @@ export async function getPlaylist(token: string, playlistId: string): Promise<Pl
 }
 
 export async function getPlaylistTracks(token: string, playlistId: string): Promise<PlaylistTracks> {
-  const result = await fetch(`${api}/v1/playlists/${playlistId}/tracks`, {
+  const result = await fetch(`${api}/v1/playlists/${playlistId}/tracks?limit=20`, {
     method: "GET", headers: { Authorization: `Bearer ${token}` }
   });
 

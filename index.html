@@ -10,7 +10,7 @@
 
 <section id="publicSection">
   Sector publico: <br>
-  <button id="loginButton">Login</button>
+  <!-- <button id="loginButton">Login</button> -->
 </section>
 
 <div class="container">
@@ -46,7 +46,7 @@
 
         </div>
         <button id="logoutButton">Logout</button>
-        <!-- <button id="loginButton">Login</button> -->
+        <button id="loginButton">Login</button>
       </section>
 
     </header>
@@ -78,11 +78,11 @@
                 <p id="savedSongsProfileName"></p>
                 <p id="totalSavedSongs"></p>
               </div>
-              <button id="savedSongsButton" class="playButton"></button>
+              <button id="playSavedSongsButton" class="playButton"></button>
             </div>
           </div>
           <div class="track-container">
-          <ol id="tracks"></ol>
+            <ol id="savedSongsTracks"></ol>
           </div>
         </section>
 
@@ -102,8 +102,8 @@
           </div>
         </div>
         <div class="track-container">
-          <ol id="tracks"></ol>
-          </div>
+          <ol id="playlistTracks"></ol>
+        </div>
       </section>
 
       <section id="spotifyEmbedSection">
@@ -115,7 +115,7 @@
 
 </div>
 
-<footer class="player">
+<footer>
   <section id="actionsSection" class="player">
     <div id="trackInfo" class="trackInfo">
       <img id="trackCover" src="" alt="Track cover" height="64px" width="64px">

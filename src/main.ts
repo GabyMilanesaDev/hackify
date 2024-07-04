@@ -44,13 +44,15 @@ async function init() {
     console.error(error);
   }
 
+  console.log(profile)
   initPublicSection(profile);
   initPrivateSection(profile);
 }
 
 function initPublicSection(profile?: UserProfile): void {
   document.getElementById("loginButton")!.addEventListener("click", login);
-  renderPublicSection(!!profile);
+  console.log(!profile)
+  renderPublicSection(!profile);
 }
 
 function renderPublicSection(render: boolean): void {
@@ -58,6 +60,7 @@ function renderPublicSection(render: boolean): void {
 }
 
 function initPrivateSection(profile?: UserProfile): void {
+  console.log(!profile)
   renderPrivateSection(!!profile);
   renderPlaylistDetail(false);
   renderSavedSongs(false);
@@ -142,7 +145,8 @@ function initPlaylistSection(profile?: UserProfile): void {
 function initUserSavedSongs(): void {
   getUserSavedTracks(localStorage.getItem("accessToken")!)
     .then((tracks: PlaylistTracks): void => {
-      renderTracks(tracks);
+      renderTracks(tracks, "savedSongsTracks");
+      renderSavedSongsPlayButton(tracks)
       document.getElementById("totalSavedSongs")!.innerText = `· ${tracks.total.toString()} canciones`;
     });
 }
@@ -162,7 +166,7 @@ function renderPlaylistsSection(render: boolean) {
 }
 
 function renderPlaylistDetail(render: boolean) {
-  playlistDetail.style.display = render ? "flex" : "none";
+  playlistDetail.style.display = render ? "block" : "none";
 }
 
 //  async function startPlayback(uris: string[]): Promise<void> {
@@ -276,7 +280,7 @@ function renderPlaylistPlayButton(tracks: PlaylistTracks) {
 }
 
 function renderSavedSongsPlayButton(tracks: PlaylistTracks) {
-  const playSavedSongsButton = document.getElementById("savedSongsButton")!;
+  const playSavedSongsButton = document.getElementById("playSavedSongsButton")!;
   playSavedSongsButton.innerHTML = `<img src="${playSecondaryIcon}" alt="Play Icon">`;
 
   if (!playSavedSongsButton) {
@@ -300,15 +304,15 @@ async function loadPlaylistTracks(playlistId: string): Promise<void> {
     ]);
     renderPlaylistDescription(playlist);
     renderPlaylistName(playlist)
-    renderTracks(tracks);
+    renderTracks(tracks, "playlistTracks");
     renderPlaylistPlayButton(tracks)
   } catch (error) {
     console.error('Error loading playlist tracks:', error);
   }
 }
 
-async function renderTracks(tracks: PlaylistTracks): Promise<void> {
-  const tracksElement = document.getElementById("tracks");
+async function renderTracks(tracks: PlaylistTracks, element: string): Promise<void> {
+  const tracksElement = document.getElementById(element);
   if (!tracksElement) {
     throw new Error("Element not found");
   }
@@ -317,7 +321,6 @@ async function renderTracks(tracks: PlaylistTracks): Promise<void> {
     const track = trackItem.track;
     const coverUrl = await getTrackCover(track.id);
     return `
-
     <li data-track-id="${track.id}" class="track-item">
               <img src="${coverUrl}" alt="Cover" style="width: 50px; height: 50px;">
               <div>
@@ -362,10 +365,10 @@ async function renderTracks(tracks: PlaylistTracks): Promise<void> {
 
 function initActionsSection(): void {
 
-  skipPreviousButton.innerHTML = `<img src="${skipPreviousIcon}" alt="Pause Icon">`;
-  skipNextButton.innerHTML = `<img src="${skipNextIcon}" alt="Pause Icon">`;
-  shuffleButton.innerHTML = `<img src="${shuffleIcon}" alt="Pause Icon">`;
-  repeatButton.innerHTML = `<img src="${repeatIcon}" alt="Pause Icon">`;
+  skipPreviousButton.innerHTML = `<img src="${skipPreviousIcon}" alt="Skip Previous Icon">`;
+  skipNextButton.innerHTML = `<img src="${skipNextIcon}" alt="Skip Next Icon">`;
+  shuffleButton.innerHTML = `<img src="${shuffleIcon}" alt="Shuffle Icon">`;
+  repeatButton.innerHTML = `<img src="${repeatIcon}" alt="Repeat Icon">`;
 
   playButton.addEventListener("click", () => {
     togglePlay();
