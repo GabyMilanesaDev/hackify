@@ -103,3 +103,11 @@ export async function getTrackCover(trackId: string): Promise<string> {
   const data = await response.json();
   return data.album.images[0].url;
 }
+
+export async function getUserSavedTracks(token: string): Promise<PlaylistTracks> {
+  const result = await fetch(`${api}/v1/me/tracks?limit=10`, {
+    method: "GET", headers: { Authorization: `Bearer ${token}` }
+  });
+
+  return await result.json();
+}

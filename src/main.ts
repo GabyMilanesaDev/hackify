@@ -1,6 +1,6 @@
 import './main.css';
 import { init as authenticatorInit, login, logout } from './auth';
-import { getMyPlaylists, initPlayer, playTrack, togglePlay, getPlaylist, getPlaylistTracks, getPlaylistCover, getTrackCover } from './api';
+import { getMyPlaylists, initPlayer, playTrack, togglePlay, getPlaylist, getPlaylistTracks, getPlaylistCover, getTrackCover, getUserSavedTracks } from './api';
 
 import playIcon from '/play.svg';
 import playSecondaryIcon from '/play-playlist.svg';
@@ -16,6 +16,10 @@ const profileSection = document.getElementById("profileSection")!;
 const playlistsSection = document.getElementById("playlistsSection")!;
 const actionsSection = document.getElementById("actionsSection")!;
 
+const playlistDetail = document.getElementById("playlistDetail")!;
+
+const homeButton = document.getElementById("homeButton")!;
+
 const playButton = document.getElementById("playButton")!;
 const shuffleButton = document.getElementById("shuffleButton")!;
 const skipPreviousButton = document.getElementById("previousTrackButton")!;
@@ -30,8 +34,6 @@ let position = 0
 const updateButtonContent = () => {
   playButton.innerHTML = isPlaying ? `<img src="${pauseIcon}" alt="Pause Icon">` : `<img src="${playIcon}" alt="Play Icon">`;
 };
-
-
 
 async function init() {
   let profile: UserProfile | undefined;
@@ -57,6 +59,7 @@ function renderPublicSection(render: boolean): void {
 
 function initPrivateSection(profile?: UserProfile): void {
   renderPrivateSection(!!profile);
+  renderPlaylistDetail(false);
   initMenuSection();
   initProfileSection(profile);
   initPlaylistSection(profile);
@@ -68,11 +71,21 @@ function renderPrivateSection(isLogged: boolean) {
 }
 
 function initMenuSection(): void {
+
+  homeButton.addEventListener("click", () => {
+    renderProfileSection(!false);
+    renderPlaylistsSection(true);
+    renderPlaylistDetail(false);
+  });
+  
   document.getElementById("profileButton")!.addEventListener("click", () => {
     renderProfileSection(profileSection.style.display !== "none");
+    renderPlaylistDetail(false);
+    renderPlaylistsSection(false)
   });
   document.getElementById("playlistsButton")!.addEventListener("click", () => {
-    renderPlaylistsSection(playlistsSection.style.display !== "none");
+    renderPlaylistsSection(true);
+    renderPlaylistDetail(false)
   });
   document.getElementById("logoutButton")!.addEventListener("click", logout);
 }
@@ -96,6 +109,8 @@ function renderProfileData(profile: UserProfile) {
   document.getElementById("uri")!.setAttribute("href", profile.external_urls.spotify);
   document.getElementById("url")!.innerText = profile.href;
   document.getElementById("url")!.setAttribute("href", profile.href);
+  document.getElementById("profilePicture")!.setAttribute("src", profile.images[0].url);
+  document.getElementById("profileName")!.innerText = profile.display_name;
 }
 
 function initPlaylistSection(profile?: UserProfile): void {
@@ -104,15 +119,6 @@ function initPlaylistSection(profile?: UserProfile): void {
       .then((playlists: PlaylistRequest): void => {
         renderPlaylistsSection(!!profile);
         renderPlaylists(playlists);
-        document.querySelectorAll('.playlist-item').forEach(item => {
-          item.addEventListener('click', (event) => {
-            const playlistId = (event.target as HTMLElement).getAttribute('data-playlist-id');
-            if (playlistId) {
-              renderPlaylistCover(playlistId);
-              loadPlaylistTracks(playlistId);
-            }
-          });
-        });
       });
   }
 }
@@ -121,12 +127,42 @@ function renderPlaylistsSection(render: boolean) {
   playlistsSection.style.display = render ? "block" : "none";
 }
 
- async function startPlayback(uris: string[]): Promise<void> {
-  queue = uris
-  playTrack(uris[position]);
-  //  for (let i = 0; i < uris.length; i++) {
-  //    playTrack(uris[i]);
-  //  }
+function renderPlaylistDetail(render: boolean) {
+  playlistDetail.style.display = render ? "flex" : "none";
+}
+
+//  async function startPlayback(uris: string[]): Promise<void> {
+//   queue = uris
+//   playTrack(uris[position]);
+
+
+//   console.log(songEnded)
+
+//   if (songEnded) {
+//     for (let i = 0; i < uris.length; i++) {
+//       playTrack(uris[position]);
+//    }
+//   }
+
+
+// }
+
+async function startPlayback(uris: string[]): Promise<void> {
+  queue = uris;
+  position = 0; 
+  await playNextTrack();
+}
+
+async function playNextTrack(): Promise<void> {
+  if (position >= queue.length) {
+    console.log('Todas las canciones han sido reproducidas');
+    return;
+  }
+
+  // await playTrack(queue[position]);
+  position++;
+
+  await playNextTrack();
 }
 
 function renderPlaylistCover(playlistId: string) {
@@ -156,15 +192,36 @@ function renderPlaylistName(playlist: Playlist): void {
   nameElement.innerText = playlist.name;
 }
 
-function renderPlaylists(playlists: PlaylistRequest) {
-  const playlist = document.getElementById("playlists");
-  if (!playlist) {
+async function renderPlaylists(playlists: PlaylistRequest) {
+  const playlistElement = document.getElementById("playlists");
+  if (!playlistElement) {
     throw new Error("Element not found");
   }
-  playlist.innerHTML = playlists.items.map((playlist) => {
-    return `<li data-playlist-id="${playlist.id}" class="playlist-item">${playlist.name}</li>`;
+  const playlistsWithImages = await Promise.all(playlists.items.map(async (playlist) => {
+    const imageUrl = await getPlaylistCover(localStorage.getItem("accessToken")!, playlist.id);
+    return {
+      ...playlist,
+      imageUrl
+    };
+  }));
+
+  playlistElement.innerHTML = playlistsWithImages.map((playlist) => {
+    return `<li data-playlist-id="${playlist.id}" class="playlist-item">
+              <img src="${playlist.imageUrl}" alt="${playlist.name}" style="width: 231px; height: 231px;">
+            </li>`;
   }).join('');
-  
+
+  document.querySelectorAll('.playlist-item').forEach(item => {
+    item.addEventListener('click', (event) => {
+      const playlistId = (event.currentTarget as HTMLElement).getAttribute('data-playlist-id');
+      if (playlistId) {
+        renderPlaylistsSection(false);
+        renderPlaylistDetail(true);
+        renderPlaylistCover(playlistId);
+        loadPlaylistTracks(playlistId);
+      }
+    });
+  });
 }
 
 function renderPlaylistPlayButton(tracks: PlaylistTracks) {
@@ -177,23 +234,11 @@ function renderPlaylistPlayButton(tracks: PlaylistTracks) {
   playPlaylistButton.addEventListener("click", async () => {
     const uris = tracks.items.map(trackItem => trackItem.track.uri);
     startPlayback(uris);
-    currentTrackInfo(tracks.items[0].track);
     // togglePlay();
 
     isPlaying = true;
     updateButtonContent(); 
   });
-}
-
-export function currentTrackInfo(track: Track) {
-  const trackCover = document.getElementById("trackCover")!;
-  const trackName = document.getElementById("trackName")!;
-  const trackArtist = document.getElementById("trackArtist")!;
-  trackCover.setAttribute("src", track.album.images[0].url);
-  trackName.innerText = track.name;
-  trackArtist.innerText = track.artists.map(artist => artist.name).join(', ');
-  document.title = track.name;
-
 }
 
 async function loadPlaylistTracks(playlistId: string): Promise<void> {
@@ -220,12 +265,12 @@ async function renderTracks(tracks: PlaylistTracks): Promise<void> {
 
   const trackItemsHTML = await Promise.all(tracks.items.map(async (trackItem) => {
     const track = trackItem.track;
-    const coverUrl = await getTrackCover(track.id);
-    return `<li data-track-uri="${track.uri}" class="track-item">
+    const coverUrl = await getTrackCover(track.id); // Suponiendo que obtienes la URL de la portada de alguna función getTrackCover
+    return `<li data-track-id="${track.id}" class="track-item">
               <img src="${coverUrl}" alt="Cover" style="width: 50px; height: 50px;">
               <div>
-              <p>${track.name}</p>
-              <p>${track.artists.map(artist => artist.name).join(', ')}</p>
+                <p>${track.name}</p>
+                <p>${track.artists.map(artist => artist.name).join(', ')}</p>
               </div>
             </li>`;
   }));
@@ -234,30 +279,33 @@ async function renderTracks(tracks: PlaylistTracks): Promise<void> {
 
   tracksElement.querySelectorAll('.track-item').forEach(item => {
     item.addEventListener('click', async () => {
-      const trackUri = item.getAttribute('data-track-uri');
-      if (trackUri) {
-        playTrack(trackUri);
-        // togglePlay();
-        isPlaying = true;
-        updateButtonContent(); 
+      const trackId = item.getAttribute('data-track-id');
+      if (trackId) {
+        const track = tracks.items.find(trackItem => trackItem.track.id === trackId)?.track;
+        if (track) {
+          await playTrack(track);
+          // togglePlay();
+          isPlaying = true;
+          updateButtonContent();
+        }
       }
     });
   });
 }
 
-function skipNextTrack() {
-  position += 1
-  playTrack(queue[position]);
-}
+// function skipNextTrack() {
+//   position += 1
+//   playTrack(queue[position]);
+// }
 
-function skipPreviousTrack() {
-  if (position === 0) {
-    position = 0
-  } else {
-    position -= 1
-  }
-  playTrack(queue[position]);
-}
+// function skipPreviousTrack() {
+//   if (position === 0) {
+//     position = 0
+//   } else {
+//     position -= 1
+//   }
+//   playTrack(queue[position]);
+// }
 
 function initActionsSection(): void {
 

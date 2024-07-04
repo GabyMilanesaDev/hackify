@@ -7,17 +7,97 @@
   <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
 </head>
 <body>
+
 <section id="publicSection">
   Sector publico: <br>
   <button id="loginButton">Login</button>
 </section>
-<section id="privateSection" class="mainContainer">
-  Sector privado: <br>
-  <section id="menuSection">
-    <button id="profileButton">Profile</button>
-    <button id="playlistsButton">Mis playlists</button>
-    <button id="logoutButton">Logout</button>
-  </section>
+
+<div class="container">
+
+  <aside class="sidebar">
+    <div class="logo-container">
+      <img src="/logo.svg" alt="Hackify logo" height="32px" width="32px">
+      <p>Hackify</p>
+    </div>
+
+    <button id="homeButton">
+      <img src="/home.svg" height="16px" alt="Home" >Home
+    </button>
+<button>
+  <img src="/saved-songs.svg" height="16px" width="16px" alt="My favorites" >My favorites
+</button>
+<button id="playlistsButton">
+  <img src="/playlist.svg" height="16px" alt="Playlists" >Playlists
+
+</button>
+  </aside>
+
+  <div class="main">
+    <header class="header">
+
+      <section id="menuSection">
+        <!-- <button id="profileButton">Profile</button> -->
+        <!-- <button id="playlistsButton">Mis playlists</button> -->
+      </section>
+
+      <input type="text" placeholder="Search music...">
+
+      <section class="header-profile">
+        <img id="profilePicture" width="48px" height="48px">
+        <div class="header-profile-user">
+          <p id="profileName"></p>
+          <button id="profileButton">View profile</button>
+
+        </div>
+        <button id="logoutButton">Logout</button>
+      </section>
+
+    </header>
+    <section id="privateSection" class="content">
+      <section id="profileSection">
+        <h1>Display your Spotify profile data</h1>
+        <h2>Logged in as <span id="displayName"></span></h2>
+        <ul>
+          <li>User ID: <span id="id"></span></li>
+          <li>Email: <span id="email"></span></li>
+          <li>Spotify URI: <a id="uri" href="#"></a></li>
+          <li>Link: <a id="url" href="#"></a></li>
+        </ul>
+      </section>
+
+      <section id="playlistsSection" >
+        <h2>Mis playlists</h2>
+        <ul id="playlists" class="my-playlists"></ul>        
+      </section>
+
+      <section id="playlistDetail">
+      <div id="playlistHero" class="playlist-hero">
+          <img id="playlistCover" src="" alt="Playlist cover" height="250px" width="250px">
+          <div class="playlist-hero-info">
+            <p>Playlist</p>
+            <h2 id="playlistName"></h2>
+            <p id="playlistDescription"></p>
+            <button id="playPlaylistButton" class="playButton"></button>
+          </div>
+        </div>
+        <ol id="tracks"></ol>
+      </section>
+
+      <section id="spotifyEmbedSection">
+        <div id="embed-iframe"></div>
+      </section>  
+    </section>
+
+  </div>
+
+</div>
+
+<!-- <footer class="player footer">
+  dfgdsfg
+</footer> -->
+
+<!-- 
   <section id="profileSection">
     <h1>Display your Spotify profile data</h1>
     <h2>Logged in as <span id="displayName"></span></h2>
@@ -49,20 +129,27 @@
         <p id="trackName"></p>
         <p id="trackArtist"></p>
       </div>
-    <div class="player-actions"> 
-      <button id="shuffleButton"></button>
-      <button id="previousTrackButton"></button>
-      <button id="playButton" class="playButton"></button>
-      <button id="nextTrackButton" class="secondary-action-button"></button>
-      <button id="repeatButton" class="secondary-action-button"></button>
-      <div id="progressContainer">
-        <div id="progressBar"></div>
+      <div class="player-container">
+        <div class="player-actions"> 
+          <button id="shuffleButton"></button>
+          <button id="previousTrackButton"></button>
+          <button id="playButton" class="playButton"></button>
+          <button id="nextTrackButton" class="secondary-action-button"></button>
+          <button id="repeatButton" class="secondary-action-button"></button>
+        </div>
+        <div id="progressContainer" class="progress-container">
+          <p id="progressPosition"></p>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <p id="progressDuration"></p>
+        </div>
       </div>
-    </div>
+    
   </section>
-  <section id="spotifyEmbedSection">
-    <div id="embed-iframe"></div>
-  </section>
-</section>
+
+  sss
+</section> -->
 </body>
 </html>
+
