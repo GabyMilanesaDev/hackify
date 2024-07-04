@@ -325,7 +325,7 @@ function renderPlaylistPlayButton(tracks: any) {
   }
 
   playPlaylistButton.addEventListener("click", async () => {
-    queue = tracks.items.map(trackItem => trackItem.track);
+    queue = tracks.items.map((trackItem: any) => trackItem.track);
     position = 0;
     startPlayback(queue);
     console.log({queue})
