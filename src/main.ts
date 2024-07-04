@@ -30,9 +30,7 @@ let isPlaying = false;
 let queue: string[] = []
 let position = 0
 let loopMode = 'none';
-console.log({queue})
-console.log({loopMode})
-console.log({songIsPlaying})
+let shuffleMode = false;
 
 const updateButtonContent = () => {
   playButton.innerHTML = isPlaying ? `<img src="${pauseIcon}" alt="Pause Icon">` : `<img src="${playIcon}" alt="Play Icon">`;
@@ -170,9 +168,11 @@ function renderPlaylistDetail(render: boolean) {
 
 async function startPlayback(tracks) {
   if (tracks.length > 0) {
-    await playTrack(tracks[position]);
+    let tracksToPlay = shuffleMode ? shuffleArray(tracks) : tracks;
+    await playTrack(tracksToPlay[position]);
   }
 }
+
 
 function skipTrack() {
   if (loopMode === 'one') {
@@ -277,6 +277,7 @@ function renderPlaylistPlayButton(tracks) {
     queue = tracks.items.map(trackItem => trackItem.track);
     position = 0;
     startPlayback(queue);
+    console.log({queue})
 
     isPlaying = true;
     updateButtonContent(); 
@@ -293,8 +294,6 @@ function renderSavedSongsPlayButton(tracks: PlaylistTracks) {
   playSavedSongsButton.addEventListener("click", async () => {
     const uris = tracks.items.map(trackItem => trackItem.track.uri);
     startPlayback(uris);
-    // togglePlay();
-
     updateButtonContent(); 
   });
 }
@@ -352,6 +351,15 @@ async function renderTracks(tracks: PlaylistTracks, element: string): Promise<vo
   });
 }
 
+function shuffleArray(array: any) {
+  let newArray = array.slice();
+  for (let i = newArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+  }
+  return newArray;
+}
+
 function initActionsSection(): void {
 
   skipPreviousButton.innerHTML = `<img src="${skipPreviousIcon}" alt="Skip Previous Icon">`;
@@ -377,15 +385,22 @@ function initActionsSection(): void {
     skipTrack();
   });
 
+  repeatButton.addEventListener("click", () => {
+     if (loopMode === 'none') {
+       loopMode = 'all';
+       console.log({loopMode})
+     } else if (loopMode === 'all') {
+       loopMode = 'one';
+       console.log({loopMode})
+     } else {
+       loopMode = 'none';
+       console.log({loopMode})
+     }
+  });
+
   shuffleButton.addEventListener("click", () => {
-    console.log("click")
-    // if (loopMode === 'none') {
-    //   loopMode = 'all';
-    // } else if (loopMode === 'all') {
-    //   loopMode = 'one';
-    // } else {
-    //   loopMode = 'none';
-    // }
+    shuffleMode = !shuffleMode;
+    console.log({shuffleMode})
   });
 
   updateButtonContent();
