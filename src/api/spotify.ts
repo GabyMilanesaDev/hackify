@@ -3,6 +3,8 @@ import { generateCodeChallenge, generateCodeVerifier } from "../utils";
 const apiAccount = 'https://accounts.spotify.com'
 const api = 'https://api.spotify.com'
 
+const limit = '?limit=10'
+
 export async function redirectToProvider(): Promise<void> {
   const verifier = generateCodeVerifier(128);
   const challenge = await generateCodeChallenge(verifier);
@@ -55,7 +57,7 @@ export async function getProfile(token: string): Promise<UserProfile> {
 }
 
 export async function getMyPlaylists(token: string): Promise<PlaylistRequest> {
-  const result = await fetch(`${api}/v1/me/playlists`, {
+  const result = await fetch(`${api}/v1/me/playlists${limit}`, {
     method: "GET", headers: { Authorization: `Bearer ${token}` }
   });
   return await result.json();
@@ -75,7 +77,7 @@ export async function getPlaylist(token: string, playlistId: string): Promise<Pl
 }
 
 export async function getPlaylistTracks(token: string, playlistId: string): Promise<PlaylistTracks> {
-  const result = await fetch(`${api}/v1/playlists/${playlistId}/tracks?limit=20`, {
+  const result = await fetch(`${api}/v1/playlists/${playlistId}/tracks${limit}`, {
     method: "GET", headers: { Authorization: `Bearer ${token}` }
   });
 
@@ -105,9 +107,17 @@ export async function getTrackCover(trackId: string): Promise<string> {
 }
 
 export async function getUserSavedTracks(token: string): Promise<PlaylistTracks> {
-  const result = await fetch(`${api}/v1/me/tracks?limit=20`, {
+  const result = await fetch(`${api}/v1/me/tracks${limit}`, {
     method: "GET", 
     headers: { Authorization: `Bearer ${token}` }
+  });
+
+  return await result.json();
+}
+
+export async function searchTracks(token: string, query: string): Promise<Track> {
+  const result = await fetch(`${api}/v1/search?q=${query}&type=track${limit}`, {
+    method: "GET", headers: { Authorization: `Bearer ${token}` }
   });
 
   return await result.json();

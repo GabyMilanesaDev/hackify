@@ -1,6 +1,16 @@
 import './main.css';
 import { init as authenticatorInit, login, logout } from './auth';
-import { getMyPlaylists, initPlayer, playTrack, togglePlay, getPlaylist, getPlaylistTracks, getPlaylistCover, getTrackCover, getUserSavedTracks, songIsPlaying } from './api';
+import { getMyPlaylists, initPlayer, playTrack, togglePlay, getPlaylist, getPlaylistTracks, getPlaylistCover, getTrackCover, getUserSavedTracks } from './api';
+import { globalState, setSongEnded, setSongIsPlaying } from './utils/globals'
+
+console.log({globalState})
+
+if (globalState.songEnded) {
+  console.log('La canción ha terminado');
+} else if (globalState.songIsPlaying) {
+  console.log('La canción está sonando');
+}
+
 
 import playIcon from '/play.svg';
 import playSecondaryIcon from '/play-playlist.svg';
@@ -26,22 +36,16 @@ const skipPreviousButton = document.getElementById("previousTrackButton")!;
 const skipNextButton = document.getElementById("nextTrackButton")!;
 const repeatButton = document.getElementById("repeatButton")!;
 
-let isPlaying = false;
+// let isPlaying = false;
 let queue: string[] = []
 let position = 0
 let loopMode = 'none';
 let shuffleMode = false;
 
-console.log('Estado de songIsPlaying:', songIsPlaying);
-
-if (songIsPlaying) {
-  console.log('La canción está reproduciéndose.');
-} else {
-  console.log('No hay ninguna canción reproduciéndose.');
-}
+console.log(localStorage.getItem("songIsPlaying"))
 
 const updateButtonContent = () => {
-  playButton.innerHTML = isPlaying ? `<img src="${pauseIcon}" alt="Pause Icon">` : `<img src="${playIcon}" alt="Play Icon">`;
+  playButton.innerHTML = globalState.songIsPlaying ? `<img src="${pauseIcon}" alt="Pause Icon">` : `<img src="${playIcon}" alt="Play Icon">`;
 };
 
 async function init() {
@@ -178,9 +182,27 @@ async function startPlayback(tracks) {
   if (tracks.length > 0) {
     let tracksToPlay = shuffleMode ? shuffleArray(tracks) : tracks;
     await playTrack(tracksToPlay[position]);
+
+    position++;
+
+    if (position < tracksToPlay.length) {
+      setTimeout(async () => {
+        await playNextTrack(tracksToPlay); 
+      }, 100);
+    } else {
+      console.log('Se han reproducido todas las canciones.');
+    }
   }
 }
 
+async function playNextTrack(tracks) {
+  if (position < tracks.length) {
+    await playTrack(tracks[position]);
+    position++; 
+  } else {
+    console.log('Se han reproducido todas las canciones.');
+  }
+}
 
 function skipTrack() {
   if (loopMode === 'one') {
@@ -376,10 +398,10 @@ function initActionsSection(): void {
 
   playButton.addEventListener("click", () => {
     togglePlay();
-    if (songIsPlaying) {  
-      isPlaying = true;
-    } else if (!songIsPlaying) {
-      isPlaying = false;
+    if (globalState.songIsPlaying) {  
+      setSongIsPlaying(true);
+    } else if (!globalState.songIsPlaying) {
+      setSongIsPlaying(false);
     }
     updateButtonContent(); 
   });

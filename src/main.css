@@ -246,7 +246,6 @@ button:focus-visible {
 	gap: 1rem;
 	transition-duration: 0.25s;
 	transition-timing-function: ease-in-out;
-	background-color: blue;
 }
 
 .playlist-hero {

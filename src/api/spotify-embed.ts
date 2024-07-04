@@ -1,6 +1,12 @@
 export let songEnded: boolean = false;
-export let songIsPlaying: boolean = false;
+import { globalState, setSongEnded, setSongIsPlaying } from '../utils/globals'
 let EmbedController: any = undefined;
+
+let currentSongPosition: number = 0;
+let currentSongDuration: number = 0;
+
+// console.log({globalState})
+
 
 // Player embed (modo gratuito)
 // Embed API https://developer.spotify.com/documentation/embeds/references/iframe-api#methods
@@ -17,14 +23,16 @@ export function initPlayer(el: HTMLElement): void {
        EmbedController.addListener('playback_update', (event: any) => {
         if (event.data.isPaused && event.data.position === 0) {
           console.log('La canción ha terminado');
-          songEnded = true;
-          songIsPlaying = false
+          currentSongPosition = 0;
+          currentSongDuration = 0;
+          setSongEnded(true);
+          setSongIsPlaying(false);
         } else if (!event.data.isPaused && event.data.position > 0) {
-          console.log('La canción está sonando')
-          songIsPlaying = true
+          // console.log('La canción está sonando')
+          setSongIsPlaying(true);
         } else if (event.data.isPaused && event.data.position > 0) {
           console.log('La canción está pausada')
-          songIsPlaying = false
+          setSongIsPlaying(false)
         }
       });
 
@@ -32,6 +40,7 @@ export function initPlayer(el: HTMLElement): void {
     IFrameAPI.createController(el, options, callback);
   };
 }
+
 
 export async function playTrack(track: Track): Promise<void> {
 
@@ -56,8 +65,8 @@ export async function playTrack(track: Track): Promise<void> {
         EmbedController.removeListener('playback_update', onPlaybackUpdate);
         resolve();
       } else if (!event.data.isPaused && event.data.position > 0) {
-        const currentSongPosition = event.data.position;
-        const currentSongDuration = event.data.duration;
+        currentSongPosition = event.data.position;
+        currentSongDuration = event.data.duration;
         progressPosition.innerText = formatDuration(currentSongPosition);
         progressDuration.innerText = formatDuration(currentSongDuration);
         const percentage = (currentSongPosition / currentSongDuration) * 100;
