@@ -21,7 +21,6 @@
 	-moz-osx-font-smoothing: grayscale;
 }
 
-/* hack, intencionalmente oculto, con display none no funciona */
 iframe {
 	top: 0;
 	width: 0;
@@ -77,10 +76,7 @@ input:focus {
 body {
 	font-family: Arial, sans-serif;
 	height: 100%;
-	/* width: 100%; */
 	display: flex;
-	/* justify-content: center;
-	align-items: center; */
   }
 
   .container {
@@ -120,7 +116,6 @@ body {
   }
 
   .header {
-	/* position: relative; */
 	height: 10%;
 	background-color: black;
 	display: flex;
@@ -169,10 +164,9 @@ body {
 	flex-direction: column;
   }
 
-.footer {
+/* .footer {
 	background-color: red;
-	
-}
+} */
 
 .logo {
 	height: 6em;
@@ -210,13 +204,6 @@ button {
 	cursor: pointer;
 	transition: background-color 0.25s;
 }
-/* button:hover {
-	border-color: #646cff;
-} */
-/* button:focus,
-button:focus-visible {
-	outline: 4px auto -webkit-focus-ring-color;
-} */
 
 .sidebar button {
 	background-color: transparent;
@@ -305,8 +292,6 @@ button:focus-visible {
 	justify-content: center;
 	align-items: center;
 	width: 100%;
-	/* padding: 0 0.5rem; */
-	/* background-color: red; */
 }
 
 .player-actions {
@@ -316,7 +301,6 @@ button:focus-visible {
 	border: #213547;
 	width: fit-content;
 	margin: auto;
-
 	gap: 1rem;
 }
 
@@ -325,7 +309,6 @@ button:focus-visible {
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	/* background-color: blue; */
 	border: #213547;
 	width: fit-content;
 	margin-left: auto;
@@ -407,8 +390,6 @@ button:focus-visible {
 
 .trackInfo {
 	display: flex;
-	/* background-color: red; */
-	/* line-height: 0.3; */
 	gap: 0.75rem;
 	align-items: center;
 	color: #A7A7A7;
@@ -428,7 +409,6 @@ button:focus-visible {
 
 .track-item {
 	display: flex;
-	/* line-height: 0.3; */
 	gap: 0.75rem;
 	align-items: center;
 	color: #A7A7A7;
@@ -440,7 +420,6 @@ button:focus-visible {
 .track-item-separator {
 	display: flex;
 	align-items: center;
-	/* width: 100%; */
 	background-color: #181818;
 	height: 52px;
 	padding-left: 1.5rem;
