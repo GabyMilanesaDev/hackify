@@ -6,6 +6,10 @@ let currentSongPosition: number = 0;
 let currentSongDuration: number = 0;
 let currentTrackUri: string = "";
 
+const progressPosition = document.getElementById("progressPosition")!;
+const progressDuration = document.getElementById("progressDuration")!;
+const progressFill = document.getElementById('progressFill')!;
+
 export function initPlayer(el: HTMLElement): void {
   // @ts-ignore
   window.onSpotifyIframeApiReady = (IFrameAPI: any) => {
@@ -14,21 +18,24 @@ export function initPlayer(el: HTMLElement): void {
       EmbedController = EmbedController_;
       EmbedController.addListener('playback_update', (event: any) => {
         if (event.data.isPaused && event.data.position === 0) {
-          console.log('La canción ha terminado');
-          currentSongPosition = 0;
-          currentSongDuration = 0;
+          // console.log('La canción ha terminado');
+          // console.log(event.data)
           setSongEnded(true);
           setSongIsPlaying(false);
         } else if (!event.data.isPaused && event.data.position > 0) {
           console.log('La canción está sonando');
           currentSongPosition = event.data.position;
           currentSongDuration = event.data.duration;
-          setSongIsPlaying(true);
+          progressPosition.innerText = formatDuration(currentSongPosition);
+          progressDuration.innerText = formatDuration(currentSongDuration);
+          const percentage = (currentSongPosition / currentSongDuration) * 100;
+          progressFill.style.width = `${percentage}%`;
           updateProgressBall();
+          setSongIsPlaying(true);
         } else if (event.data.isPaused && event.data.position > 0) {
           console.log('La canción está pausada');
           setSongIsPlaying(false);
-        }
+        } 
       });
     };
     IFrameAPI.createController(el, options, callback);
@@ -47,9 +54,7 @@ export async function playTrack(track: any, startAt: number = 0): Promise<void> 
     const trackCover = document.getElementById("trackCover")!;
     const trackName = document.getElementById("trackName")!;
     const trackArtist = document.getElementById("trackArtist")!;
-    const progressPosition = document.getElementById("progressPosition")!;
-    const progressDuration = document.getElementById("progressDuration")!;
-    const progressFill = document.getElementById('progressFill')!;
+
 
     trackCover.setAttribute("src", track.album.images[0].url);
     trackName.innerText = track.name;
@@ -58,6 +63,15 @@ export async function playTrack(track: any, startAt: number = 0): Promise<void> 
 
     const onPlaybackUpdate = (event: any) => {
       if (event.data.isPaused && event.data.position === 0) {
+        currentSongPosition = 0;
+        currentSongDuration = 0;
+        progressPosition.innerText = formatDuration(currentSongPosition);
+        progressDuration.innerText = formatDuration(currentSongDuration);
+        // const percentage = (currentSongPosition / currentSongDuration) * 100;
+        progressFill.style.width = `${0}%`;
+        updateProgressBall();
+        console.log({currentSongPosition})
+        console.log({currentSongDuration})
         EmbedController.removeListener('playback_update', onPlaybackUpdate);
         resolve();
       } else if (!event.data.isPaused && event.data.position > 0) {
@@ -68,7 +82,7 @@ export async function playTrack(track: any, startAt: number = 0): Promise<void> 
         const percentage = (currentSongPosition / currentSongDuration) * 100;
         progressFill.style.width = `${percentage}%`;
         updateProgressBall();
-      }
+      } 
     };
 
     EmbedController.addListener('playback_update', onPlaybackUpdate);

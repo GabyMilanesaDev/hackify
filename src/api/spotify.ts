@@ -3,7 +3,9 @@ import { generateCodeChallenge, generateCodeVerifier } from "../utils";
 const apiAccount = 'https://accounts.spotify.com'
 const api = 'https://api.spotify.com'
 
-const limit = 'limit=10'
+const limit = 'limit=15'
+const featuredLimit = 'limit=10'
+const categoryLimit = 'limit=20'
 
 export async function redirectToProvider(): Promise<void> {
   const verifier = generateCodeVerifier(128);
@@ -115,14 +117,36 @@ export async function getUserSavedTracks(token: string): Promise<PlaylistTracks>
   return await result.json();
 }
 
-// https://api.spotify.com/v1/search?q=en+la+intimidad&type=track&limit=10
-
-// https://api.spotify.com/v1/search?q=en%20la%20intimidad&type=track?limit=10
-
-
 export async function searchTracks(query: string): Promise<TrackResponse> {
   const token = localStorage.getItem("accessToken")!;
   const result = await fetch(`${api}/v1/search?q=${query}&type=track&${limit}`, {
+    method: "GET", headers: { Authorization: `Bearer ${token}` }
+  });
+
+  return await result.json();
+}
+
+export async function getFeaturedPlaylists(): Promise<PlaylistRequest> {
+  const token = localStorage.getItem("accessToken")!;
+  const result = await fetch(`${api}/v1/browse/featured-playlists?${featuredLimit}`, {
+    method: "GET", headers: { Authorization: `Bearer ${token}` }
+  });
+
+  return await result.json();
+}
+
+export async function getCategories(): Promise<CategoryRequest> {
+  const token = localStorage.getItem("accessToken")!;
+  const result = await fetch(`${api}/v1/browse/categories?${categoryLimit}`, {
+    method: "GET", headers: { Authorization: `Bearer ${token}` }
+  });
+
+  return await result.json();
+}
+
+export async function getCategoryPlaylists(categoryId: string): Promise<PlaylistRequest> {
+  const token = localStorage.getItem("accessToken")!;
+  const result = await fetch(`${api}/v1/browse/categories/${categoryId}/playlists?${categoryLimit}`, {
     method: "GET", headers: { Authorization: `Bearer ${token}` }
   });
 

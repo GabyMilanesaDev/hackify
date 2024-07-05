@@ -90,7 +90,7 @@ body {
   .sidebar {
 	width: 15%;
 	min-width: 150px;
-	/* max-width: 270px; */
+	max-width: 240px;
 	background-color: black;
 	display: flex;
 	font-size: 1.5em;
@@ -187,6 +187,36 @@ body {
 	padding: 2em;
 }
 
+.featured-playlists {
+	display: flex;
+	overflow-x: auto;
+	scrollbar-width: none;
+	gap: 1rem;
+	list-style: none;
+}
+
+figure {
+	height: 275px;
+	width: 493px;
+	border-radius: 0.5rem;
+}
+
+figcaption {
+	font-size: 52px;
+	padding-left: 16px;
+	padding-top: 16px;
+    color: #ffffff;
+    font-weight: 700;
+    line-height: 1;
+    word-wrap: break-word;
+    overflow-wrap: break-word; 
+    user-select: none;
+}
+
+figcaption::-webkit-scrollbar {
+	width: 0;
+  }
+
 .playButton {
 	background-color: transparent;
 	color: #ffffff;
@@ -241,10 +271,9 @@ button {
     background-image: url('/playlist-frame.svg');
     display: flex;
 	width: 100%;
-	/* padding: 1rem; */
-	/* margin: 1rem; */
+	border-top-left-radius: 1rem;
+	border-top-right-radius: 1rem;
     align-items: center;
-	/* margin-bottom: 20px; */
 }
 
 .playlist-hero-info {
@@ -295,6 +324,7 @@ button {
 	align-items: center;
 	width: 100%;
 }
+
 
 .player-actions {
 	display: flex;
@@ -434,7 +464,7 @@ button {
 .track-item-separator {
 	display: flex;
 	align-items: center;
-	background-color: #181818;
+	background-color: #1D1D1A;
 	height: 52px;
 	padding-left: 1.5rem;
 	padding-right: 1.5rem;

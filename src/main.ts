@@ -1,51 +1,56 @@
 import './main.css';
 import { init as authenticatorInit, login, logout } from './auth';
-import { getMyPlaylists, initPlayer, playTrack, togglePlay, getPlaylist, getPlaylistTracks, getPlaylistCover, getTrackCover, getUserSavedTracks, searchTracks } from './api';
-import { globalState, setSongIsPlaying } from './utils/globals'
-
-console.log({globalState})
-
-if (globalState.songEnded) {
-  console.log('La canción ha terminado');
-} else if (globalState.songIsPlaying) {
-  console.log('La canción está sonando');
-}
-
+import { getMyPlaylists, initPlayer, playTrack, togglePlay, getPlaylist, getPlaylistTracks, getPlaylistCover, getTrackCover, getUserSavedTracks, searchTracks, getFeaturedPlaylists, getCategories, getCategoryPlaylists } from './api';
 import playIcon from '/play.svg';
-import playSecondaryIcon from '/play-playlist.svg';
+import playSecondaryIcon from '/play-secondary.svg';
 import pauseIcon from '/pause.svg';
+import pauseSecondaryIcon from '/pause-secondary.svg';
 import shuffleIcon from '/shuffle.svg';
+import shuffleActiveIcon from '/shuffle-active.svg';
 import skipPreviousIcon from '/skip-previous.svg';
 import skipNextIcon from '/skip-next.svg';
-import repeatIcon from '/loop.svg';
+import repeatIcon from '/repeat.svg';
+import repeatOneIcon from '/repeat-one.svg';
+import repeatAllIcon from '/repeat-all.svg';
+import { globalState, setSongIsPlaying } from './utils/globals'
+
+function checkGlobalState() {
+  if (globalState.songIsPlaying) {
+    updateButtonContent();
+  } else if (!globalState.songIsPlaying) {
+    updateButtonContent();
+  }
+}
+
+setInterval(checkGlobalState, 100);
 
 const publicSection = document.getElementById("publicSection")!;
 const privateSection = document.getElementById("privateSection")!;
 const profileSection = document.getElementById("profileSection")!;
 const playlistsSection = document.getElementById("playlistsSection")!;
 const actionsSection = document.getElementById("actionsSection")!;
-
 const playlistDetail = document.getElementById("playlistDetail")!;
-
 const homeButton = document.getElementById("homeButton")!;
-
-const searchInput = document.getElementById('searchInput')!;
-searchInput.addEventListener('input', debounce(performSearch, 500));
-
 const playButton = document.getElementById("playButton")!;
+const playSavedSongsButton = document.getElementById("playSavedSongsButton")!;
+const playPlaylistButton = document.getElementById("playPlaylistButton")!;
 const shuffleButton = document.getElementById("shuffleButton")!;
 const skipPreviousButton = document.getElementById("previousTrackButton")!;
 const skipNextButton = document.getElementById("nextTrackButton")!;
 const repeatButton = document.getElementById("repeatButton")!;
+const searchInput = document.getElementById('searchInput')!;
+searchInput.addEventListener('input', debounce(performSearch, 500));
 
-// let isPlaying = false;
 let queue: string[] = []
 let position = 0
 let loopMode = 'none';
 let shuffleMode = false;
+const colors = ['#8D67AB','#BA5D08', '#608109', '#26856B', '#1E3264', '#E8105B']
 
 const updateButtonContent = () => {
   playButton.innerHTML = globalState.songIsPlaying ? `<img src="${pauseIcon}" alt="Pause Icon">` : `<img src="${playIcon}" alt="Play Icon">`;
+  playPlaylistButton.innerHTML = globalState.songIsPlaying ? `<img src="${pauseSecondaryIcon}" alt="Pause Icon">` : `<img src="${playSecondaryIcon}" alt="Play Icon">`;
+  playSavedSongsButton.innerHTML = globalState.songIsPlaying ? `<img src="${pauseSecondaryIcon}" alt="Pause Icon">` : `<img src="${playSecondaryIcon}" alt="Play Icon">`;
 };
 
 async function init() {
@@ -76,6 +81,7 @@ function initPrivateSection(profile?: UserProfile): void {
   renderSavedSongs(false);
   renderSavedSongsDetail(false);
   initMenuSection();
+  initHomeSection();
   initProfileSection(profile);
   initPlaylistSection(profile);
   initActionsSection();
@@ -88,8 +94,9 @@ function renderPrivateSection(isLogged: boolean) {
 function initMenuSection(): void {
 
   homeButton.addEventListener("click", () => {
+    renderHomeSection(true);
     renderProfileSection(!false);
-    renderPlaylistsSection(true);
+    renderPlaylistsSection(false);
     renderPlaylistDetail(false);
     renderSavedSongsDetail(false);
     renderSavedSongs(false);
@@ -199,16 +206,77 @@ function renderSearchSection(render: boolean) {
   searchSection.style.display = render ? "block" : "none";
 }
 
+function renderHomeSection(render: boolean) {
+  const homeSection = document.getElementById("homeSection")!;
+  homeSection.style.display = render ? "block" : "none";
+}
+
+function initHomeSection(): void {
+  getFeaturedPlaylists()
+    .then((playlists: PlaylistRequest): void => {
+      if (playlists.playlists.items.length >= 3) {
+
+        const getRandomIndex = (max: number) => Math.floor(Math.random() * max);
+        
+        let selectedIndexes = new Set<number>();
+
+        while (selectedIndexes.size < 3) {
+          selectedIndexes.add(getRandomIndex(playlists.playlists.items.length));
+        }
+        
+        const selectedItems = Array.from(selectedIndexes).map(index => playlists.playlists.items[index]);
+        
+        renderCategories(selectedItems);
+      } else {
+        console.log("No hay suficientes elementos para seleccionar 3 aleatoriamente.");
+      }
+    });
+}
+
+function renderCategories(featuredPlaylists: any): void {
+  const featuredCategories = document.getElementById("featuredPlaylists");
+
+  if (!featuredCategories) {
+    throw new Error("Element not found");
+  }
+
+  const getRandomColor = () => colors[Math.floor(Math.random() * colors.length)];
+
+  featuredCategories.innerHTML = featuredPlaylists.map((category: any) => {
+
+    return `<li>
+              <figure style="background-color: ${getRandomColor()};">
+                <figcaption>${category.name}</figcaption>
+              </figure>
+            </li>`;
+  }).join('');
+}
+
 async function startPlayback(tracks: any) {
   if (tracks.length > 0) {
-    let tracksToPlay = shuffleMode ? shuffleArray(tracks) : tracks;
-    await playTrack(tracksToPlay[position]);
+    queue = shuffleMode ? shuffleArray(tracks) : tracks;
+    position = 0;
+    await playNextTrack();
+  }
+}
 
+async function playNextTrack() {
+  if (position < queue.length) {
+    await playTrack(queue[position]);
     position++;
-
-    if (position < tracksToPlay.length) {
+    if (position < queue.length) {
       setTimeout(async () => {
-        await playNextTrack(tracksToPlay); 
+        await playNextTrack();
+      }, 100);
+    } else if (loopMode === 'all') {
+      position = 0;
+      setTimeout(async () => {
+        await playNextTrack();
+      }, 100);
+    } else if (loopMode === 'one') {
+      position--;
+      setTimeout(async () => {
+        await playNextTrack();
       }, 100);
     } else {
       console.log('Se han reproducido todas las canciones.');
@@ -216,44 +284,43 @@ async function startPlayback(tracks: any) {
   }
 }
 
-async function playNextTrack(tracks: any) {
-  if (position < tracks.length) {
-    await playTrack(tracks[position]);
-    position++; 
-  } else {
-    console.log('Se han reproducido todas las canciones.');
-  }
-}
 
 function skipTrack() {
   if (loopMode === 'one') {
-    playTrack(queue[position]);
+    playTrack(queue[position - 1]);
   } else {
-    if (position < queue.length - 1) {
-      position++;
+    if (position < queue.length) {
       playTrack(queue[position]);
+      position++;
+    } else if (loopMode === 'all') {
+      position = 0;
+      playTrack(queue[position]);
+      position++;
     } else {
-      if (loopMode === 'all') {
-        position = 0;
-        playTrack(queue[position]);
-      }
+      console.log('Se han reproducido todas las canciones.');
     }
+  }
+  if (loopMode === 'one') {
+    loopMode = 'all';
+    repeatButton.innerHTML = `<img src="${repeatAllIcon}" alt="Repeat Icon">`;
   }
 }
 
 function skipPreviousTrack() {
   if (loopMode === 'one') {
-    playTrack(queue[position]);
+    playTrack(queue[position - 1]);
   } else {
-    if (position > 0) {
+    if (position > 1) {
       position--;
-      playTrack(queue[position]);
-    } else {
-      if (loopMode === 'all') {
-        position = queue.length - 1;
-        playTrack(queue[position]);
-      }
+      playTrack(queue[position - 1]);
+    } else if (loopMode === 'all') {
+      position = queue.length;
+      playTrack(queue[position - 1]);
     }
+  }
+  if (loopMode === 'one') {
+    loopMode = 'all';
+    repeatButton.innerHTML = `<img src="${repeatAllIcon}" alt="Repeat Icon">`;
   }
 }
 
@@ -317,7 +384,6 @@ async function renderPlaylists(playlists: PlaylistRequest) {
 }
 
 function renderPlaylistPlayButton(tracks: any) {
-  const playPlaylistButton = document.getElementById("playPlaylistButton")!;
   playPlaylistButton.innerHTML = `<img src="${playSecondaryIcon}" alt="Play Icon">`;
 
   if (!playPlaylistButton) {
@@ -325,28 +391,23 @@ function renderPlaylistPlayButton(tracks: any) {
   }
 
   playPlaylistButton.addEventListener("click", async () => {
+
     queue = tracks.items.map((trackItem: any) => trackItem.track);
     position = 0;
     startPlayback(queue);
-    console.log({queue})
-    // isPlaying = true;
-    updateButtonContent(); 
   });
 }
 
 function renderSavedSongsPlayButton(tracks: PlaylistTracks) {
-  const playSavedSongsButton = document.getElementById("playSavedSongsButton")!;
   playSavedSongsButton.innerHTML = `<img src="${playSecondaryIcon}" alt="Play Icon">`;
 
   if (!playSavedSongsButton) {
     throw new Error("Element not found");
   }
   playSavedSongsButton.addEventListener("click", async () => {
-    queue = tracks.items.map(trackItem => trackItem.track.id);
+    queue = tracks.items.map((trackItem: any) => trackItem.track);
     position = 0;
     startPlayback(queue);
-    // isPlaying = true;
-    updateButtonContent(); 
   });
 }
 
@@ -374,7 +435,6 @@ async function renderTracks(tracks: PlaylistTracks, element: string): Promise<vo
 
   const trackItemsHTML = await Promise.all(tracks.items.map(async (trackItem) => {
     const track = trackItem.track;
-    console.log(track)
     const coverUrl = await getTrackCover(track.id);
     return `
     <li data-track-id="${track.id}" class="track-item">
@@ -402,8 +462,6 @@ async function renderTracks(tracks: PlaylistTracks, element: string): Promise<vo
         const track = tracks.items.find(trackItem => trackItem.track.id === trackId)?.track;
         if (track) {
           await playTrack(track);
-          // isPlaying = true;
-          updateButtonContent();
         }
       }
     });
@@ -419,10 +477,7 @@ function shuffleArray(array: any) {
   return newArray;
 }
 
-
-
 function initActionsSection(): void {
-
   skipPreviousButton.innerHTML = `<img src="${skipPreviousIcon}" alt="Skip Previous Icon">`;
   skipNextButton.innerHTML = `<img src="${skipNextIcon}" alt="Skip Next Icon">`;
   shuffleButton.innerHTML = `<img src="${shuffleIcon}" alt="Shuffle Icon">`;
@@ -430,42 +485,56 @@ function initActionsSection(): void {
 
   playButton.addEventListener("click", () => {
     togglePlay();
-    if (globalState.songIsPlaying) {  
-      setSongIsPlaying(true);
-    } else if (!globalState.songIsPlaying) {
-      setSongIsPlaying(false);
-    }
-    updateButtonContent(); 
+    setSongIsPlaying(globalState.songIsPlaying);
   });
 
   skipPreviousButton.addEventListener("click", () => {
     skipPreviousTrack();
+    if (loopMode === 'one') {
+      loopMode = 'all';
+      repeatButton.innerHTML = `<img src="${repeatAllIcon}" alt="Repeat Icon">`;
+    }
   });
 
   skipNextButton.addEventListener("click", () => {
     skipTrack();
+    if (loopMode === 'one') {
+      loopMode = 'all';
+      repeatButton.innerHTML = `<img src="${repeatAllIcon}" alt="Repeat Icon">`;
+    }
   });
 
   repeatButton.addEventListener("click", () => {
-     if (loopMode === 'none') {
-       loopMode = 'all';
-       console.log({loopMode})
-     } else if (loopMode === 'all') {
-       loopMode = 'one';
-       console.log({loopMode})
-     } else {
-       loopMode = 'none';
-       console.log({loopMode})
-     }
+    if (loopMode === 'none') {
+      loopMode = 'all';
+      repeatButton.innerHTML = `<img src="${repeatAllIcon}" alt="Repeat Icon">`;
+    } else if (loopMode === 'all') {
+      loopMode = 'one';
+      repeatButton.innerHTML = `<img src="${repeatOneIcon}" alt="Repeat Icon">`;
+    } else {
+      loopMode = 'none';
+      repeatButton.innerHTML = `<img src="${repeatIcon}" alt="Repeat Icon">`;
+    }
   });
 
   shuffleButton.addEventListener("click", () => {
     shuffleMode = !shuffleMode;
-    console.log({shuffleMode})
+    shuffleButton.innerHTML = shuffleMode ? `<img src="${shuffleActiveIcon}" alt="Shuffle Active Icon">` : `<img src="${shuffleIcon}" alt="Shuffle Icon">`;
+    if (shuffleMode) {
+      shuffleCurrentQueue();
+    }
   });
 
-  updateButtonContent();
   renderActionsSection(true);
+}
+
+function shuffleCurrentQueue() {
+  if (queue.length > 0) {
+    const currentTrack = queue[position - 1];
+    const remainingQueue = queue.slice(position);
+    queue = [currentTrack, ...shuffleArray(remainingQueue)];
+    position = 1;
+  }
 }
 
 function renderActionsSection(render: boolean) {

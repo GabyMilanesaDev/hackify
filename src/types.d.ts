@@ -34,6 +34,9 @@ type Playlist = {
 
 type PlaylistRequest = {
   items: Playlist[];
+  playlists: {
+    items: Playlist[];
+  };
 };
 
 type PlaylistTracks = {
@@ -81,5 +84,11 @@ type PlaybackState = {
     name: string;
     artists: Artist[];
     duration_ms: number;
+  };
+};
+
+type CategoryRequest = {
+  categories: {
+    items: Category[];
   };
 };
