@@ -118,7 +118,8 @@ body {
   }
 
   .header {
-	height: 10%;
+	height: 70px;
+	max-height: 70px;
 	background-color: black;
 	display: flex;
 	align-items: center;
@@ -300,6 +301,10 @@ button {
 	transition-timing-function: ease-in-out;
 }
 
+.playlist-item  img {
+	border-radius: 8%;
+}
+
 .playlist-hero {
     background-image: url('/playlist-frame.svg');
     display: flex;
@@ -321,7 +326,8 @@ button {
 }
 
 .playlist-hero img {
-	padding: 1rem;
+	padding: 16px;
+	border-radius: 8%;
 }
 
 .playlist-hero-info p {

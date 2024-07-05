@@ -70,25 +70,18 @@ function initPublicSection(profile?: UserProfile): void {
   renderPublicSection(!profile);
 }
 
-function renderPublicSection(render: boolean): void {
-  publicSection.style.display = render ? "none" : "block";
-}
-
 function initPrivateSection(profile?: UserProfile): void {
   renderPrivateSection(!!profile);
   renderPlaylistDetail(false);
   renderSearchSection(false);
   renderSavedSongs(false);
   renderSavedSongsDetail(false);
+  renderPlaylistsSection(false)
   initMenuSection();
   initHomeSection();
   initProfileSection(profile);
   initPlaylistSection(profile);
   initActionsSection();
-}
-
-function renderPrivateSection(isLogged: boolean) {
-  privateSection.style.display = isLogged ? "block" : "none";
 }
 
 function initMenuSection(): void {
@@ -98,6 +91,7 @@ function initMenuSection(): void {
     renderHomeSection(true);
     renderProfileSection(!false);
     renderPlaylistsSection(false);
+    renderBrowsePlaylistsDetail(false);
     renderPlaylistDetail(false);
     renderSavedSongsDetail(false);
     renderSavedSongs(false);
@@ -107,6 +101,7 @@ function initMenuSection(): void {
   searchInput.addEventListener("focus", () => {
     renderHomeSection(false);
     renderSearchSection(true);
+    renderBrowsePlaylistsDetail(false);
     renderPlaylistsSection(false);
     renderPlaylistDetail(false);
     renderSavedSongs(false);
@@ -117,6 +112,7 @@ function initMenuSection(): void {
     renderHomeSection(false);
     initUserSavedSongs();
     renderSavedSongs(false);
+    renderBrowsePlaylistsDetail(false);
     renderSavedSongsDetail(true);
     renderPlaylistsSection(false);
     renderPlaylistDetail(false);
@@ -127,6 +123,7 @@ function initMenuSection(): void {
     renderHomeSection(false);
     renderProfileSection(profileSection.style.display !== "none");
     renderPlaylistDetail(false);
+    renderBrowsePlaylistsDetail(false);
     renderPlaylistsSection(false)
     renderSearchSection(false);
   });
@@ -134,6 +131,7 @@ function initMenuSection(): void {
   document.getElementById("playlistsButton")!.addEventListener("click", () => {
     renderHomeSection(false);
     renderPlaylistsSection(true);
+    renderBrowsePlaylistsDetail(false);
     renderPlaylistDetail(false)
     renderSavedSongs(false);
     renderSavedSongsDetail(false);
@@ -149,6 +147,14 @@ function initProfileSection(profile?: UserProfile | undefined) {
   if (profile) {
     renderProfileData(profile);
   }
+}
+
+function renderPublicSection(render: boolean): void {
+  publicSection.style.display = render ? "none" : "block";
+}
+
+function renderPrivateSection(isLogged: boolean) {
+  privateSection.style.display = isLogged ? "block" : "none";
 }
 
 function renderProfileSection(render: boolean) {
@@ -173,7 +179,6 @@ function initPlaylistSection(profile?: UserProfile): void {
   if (profile) {
     getMyPlaylists(localStorage.getItem("accessToken")!)
       .then((playlists: PlaylistRequest): void => {
-        renderPlaylistsSection(!!profile);
         renderPlaylists(playlists);
       });
   }
@@ -250,6 +255,7 @@ function initHomeSection(): void {
         console.log("No hay categorías disponibles.");
       }
     });
+    
 }
 
 function renderFeaturedCategories(featuredPlaylists: any): void {
@@ -385,7 +391,6 @@ async function playNextTrack() {
   }
 }
 
-
 function skipTrack() {
   if (loopMode === 'one') {
     playTrack(queue[position - 1]);
@@ -493,9 +498,14 @@ function renderPlaylistPlayButton(tracks: any) {
 
   playPlaylistButton.addEventListener("click", async () => {
 
-    queue = tracks.items.map((trackItem: any) => trackItem.track);
-    position = 0;
-    startPlayback(queue);
+    if (tracks.items.every((trackItem: any) => queue.some((track: any) => track.id === trackItem.track.id))) {
+      console.log("La playlist es la misma");
+      togglePlay();
+    } else {
+      queue = tracks.items.map((trackItem: any) => trackItem.track);
+      position = 0;
+      startPlayback(queue);
+    }
   });
 }
 
