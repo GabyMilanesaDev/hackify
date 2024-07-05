@@ -94,6 +94,7 @@ function renderPrivateSection(isLogged: boolean) {
 function initMenuSection(): void {
 
   homeButton.addEventListener("click", () => {
+    initHomeSection();
     renderHomeSection(true);
     renderProfileSection(!false);
     renderPlaylistsSection(false);
@@ -104,6 +105,7 @@ function initMenuSection(): void {
   });
 
   searchInput.addEventListener("focus", () => {
+    renderHomeSection(false);
     renderSearchSection(true);
     renderPlaylistsSection(false);
     renderPlaylistDetail(false);
@@ -112,6 +114,7 @@ function initMenuSection(): void {
   });
 
   document.getElementById("savedSongsButton")!.addEventListener("click", () => {
+    renderHomeSection(false);
     initUserSavedSongs();
     renderSavedSongs(false);
     renderSavedSongsDetail(true);
@@ -121,6 +124,7 @@ function initMenuSection(): void {
   });
   
   document.getElementById("profileButton")!.addEventListener("click", () => {
+    renderHomeSection(false);
     renderProfileSection(profileSection.style.display !== "none");
     renderPlaylistDetail(false);
     renderPlaylistsSection(false)
@@ -128,6 +132,7 @@ function initMenuSection(): void {
   });
 
   document.getElementById("playlistsButton")!.addEventListener("click", () => {
+    renderHomeSection(false);
     renderPlaylistsSection(true);
     renderPlaylistDetail(false)
     renderSavedSongs(false);
@@ -211,6 +216,11 @@ function renderHomeSection(render: boolean) {
   homeSection.style.display = render ? "block" : "none";
 }
 
+function renderBrowsePlaylistsDetail(render: boolean) {
+  const browsePlaylistsDetail = document.getElementById("browsePlaylistsDetail")!;
+  browsePlaylistsDetail.style.display = render ? "block" : "none";
+}
+
 function initHomeSection(): void {
   getFeaturedPlaylists()
     .then((playlists: PlaylistRequest): void => {
@@ -226,14 +236,23 @@ function initHomeSection(): void {
         
         const selectedItems = Array.from(selectedIndexes).map(index => playlists.playlists.items[index]);
         
-        renderCategories(selectedItems);
+        renderFeaturedCategories(selectedItems);
       } else {
         console.log("No hay suficientes elementos para seleccionar 3 aleatoriamente.");
       }
     });
+
+    getCategories()
+    .then((categories: any): void => {
+      if (categories.categories.items.length > 0) {
+        renderCategories(categories.categories.items);
+      } else {
+        console.log("No hay categorías disponibles.");
+      }
+    });
 }
 
-function renderCategories(featuredPlaylists: any): void {
+function renderFeaturedCategories(featuredPlaylists: any): void {
   const featuredCategories = document.getElementById("featuredPlaylists");
 
   if (!featuredCategories) {
@@ -242,14 +261,96 @@ function renderCategories(featuredPlaylists: any): void {
 
   const getRandomColor = () => colors[Math.floor(Math.random() * colors.length)];
 
-  featuredCategories.innerHTML = featuredPlaylists.map((category: any) => {
+  featuredCategories.innerHTML = '';
 
-    return `<li>
-              <figure style="background-color: ${getRandomColor()};">
-                <figcaption>${category.name}</figcaption>
-              </figure>
-            </li>`;
-  }).join('');
+  featuredPlaylists.forEach((category: any, index: number) => {
+    const li = document.createElement('li');
+    const figure = document.createElement('figure');
+    figure.style.backgroundColor = getRandomColor();
+    figure.innerHTML = `<figcaption>${category.name}</figcaption>`;
+
+    figure.addEventListener('click', () => {
+      renderHomeSection(false);
+      renderPlaylistsSection(false);
+      renderPlaylistDetail(true);
+      renderPlaylistCover(category.id);
+      loadPlaylistTracks(category.id);
+    });
+
+    li.appendChild(figure);
+    featuredCategories.appendChild(li);
+  });
+}
+
+function renderCategories(categories: any): void {
+  const browseCategories = document.getElementById("browsePlaylists");
+
+  if (!browseCategories) {
+    throw new Error("Element not found");
+  }
+
+  const getRandomColor = () => colors[Math.floor(Math.random() * colors.length)];
+
+  browseCategories.innerHTML = '';
+
+  categories.forEach((category: any, index: number) => {
+    const li = document.createElement('li');
+    const figure = document.createElement('figure');
+    figure.style.backgroundColor = getRandomColor();
+    figure.innerHTML = `<figcaption>${category.name}</figcaption>`;
+
+    figure.addEventListener('click', async () => {
+      renderHomeSection(false);
+      renderPlaylistsSection(false);
+      renderPlaylistDetail(false);
+      renderBrowsePlaylistsDetail(true);
+      document.getElementById("categoryName")!.innerText = category.name;
+
+      try {
+        const playlists = await getCategoryPlaylists(category.id);
+        const playlistsWithImages = await Promise.all(playlists.playlists.items.map(async (playlist) => {
+          const imageUrl = await getPlaylistCover(localStorage.getItem("accessToken")!, playlist.id);
+          return {
+            ...playlist,
+            imageUrl
+          };
+        }));
+
+        const browseCategoryPlaylists = document.getElementById("browseCategoryPlaylists")!;
+        browseCategoryPlaylists.innerHTML = '';
+        playlistsWithImages.forEach((playlist) => {
+          const li = document.createElement('li');
+          li.className = 'playlist-item';
+        
+          const img = document.createElement('img');
+          img.src = playlist.imageUrl;
+          img.alt = `Cover of ${playlist.name}`;
+          img.width = 231;
+          img.height = 231;
+        
+          li.addEventListener('click', () => {
+
+            document.getElementById("browsePlaylistsDetail")!.style.display = "none";
+            console.log(`Playlist ${playlist.name} clicked!`);
+            renderHomeSection(false);
+            renderPlaylistsSection(false);
+            renderPlaylistDetail(true);
+            renderPlaylistCover(playlist.id);
+            loadPlaylistTracks(playlist.id);
+          });
+        
+          li.appendChild(img);
+          browseCategoryPlaylists.appendChild(li);
+        });
+
+      } catch (error) {
+        console.error('Error fetching playlist covers:', error);
+      }
+    });
+
+    li.appendChild(figure);
+    browseCategories.appendChild(li);
+  });
 }
 
 async function startPlayback(tracks: any) {

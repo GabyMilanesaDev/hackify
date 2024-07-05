@@ -18,12 +18,9 @@ export function initPlayer(el: HTMLElement): void {
       EmbedController = EmbedController_;
       EmbedController.addListener('playback_update', (event: any) => {
         if (event.data.isPaused && event.data.position === 0) {
-          // console.log('La canción ha terminado');
-          // console.log(event.data)
           setSongEnded(true);
           setSongIsPlaying(false);
         } else if (!event.data.isPaused && event.data.position > 0) {
-          console.log('La canción está sonando');
           currentSongPosition = event.data.position;
           currentSongDuration = event.data.duration;
           progressPosition.innerText = formatDuration(currentSongPosition);
@@ -33,7 +30,6 @@ export function initPlayer(el: HTMLElement): void {
           updateProgressBall();
           setSongIsPlaying(true);
         } else if (event.data.isPaused && event.data.position > 0) {
-          console.log('La canción está pausada');
           setSongIsPlaying(false);
         } 
       });
@@ -67,11 +63,8 @@ export async function playTrack(track: any, startAt: number = 0): Promise<void> 
         currentSongDuration = 0;
         progressPosition.innerText = formatDuration(currentSongPosition);
         progressDuration.innerText = formatDuration(currentSongDuration);
-        // const percentage = (currentSongPosition / currentSongDuration) * 100;
         progressFill.style.width = `${0}%`;
         updateProgressBall();
-        console.log({currentSongPosition})
-        console.log({currentSongDuration})
         EmbedController.removeListener('playback_update', onPlaybackUpdate);
         resolve();
       } else if (!event.data.isPaused && event.data.position > 0) {
@@ -135,7 +128,6 @@ function setupEventListeners() {
         const newPercentage = (clickX / progressBar.clientWidth) * 100;
         const newPosition = Math.floor((newPercentage / 100) * currentSongDuration);
         currentSongPosition = newPosition;
-        console.log(newPosition)
         EmbedController.loadUri(currentTrackUri, false, newPosition/1000);
         EmbedController.play();
       }
