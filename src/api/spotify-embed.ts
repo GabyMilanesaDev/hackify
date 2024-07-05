@@ -112,7 +112,7 @@ function handleProgressBarClick(event: MouseEvent) {
 
 function setupEventListeners() {
   const forwardButton = document.getElementById('forwardButton')!;
-  forwardButton.addEventListener('mousedown', (event) => {
+  forwardButton.addEventListener('mousedown', () => {
     let isDragging = false;
 
     const onMouseMove = (event: MouseEvent) => {
