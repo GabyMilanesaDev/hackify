@@ -226,6 +226,10 @@ body {
 	width: 0;
   } */
 
+  img#trackCover[src=""] {
+	display: none;
+  }
+
 figure {
 	height: 275px;
 	width: 493px;

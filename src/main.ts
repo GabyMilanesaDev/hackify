@@ -396,8 +396,8 @@ function skipTrack() {
     playTrack(queue[position - 1]);
   } else {
     if (position < queue.length) {
-      playTrack(queue[position]);
       position++;
+      playTrack(queue[position]);
     } else if (loopMode === 'all') {
       position = 0;
       playTrack(queue[position]);
@@ -499,8 +499,14 @@ function renderPlaylistPlayButton(tracks: any) {
   playPlaylistButton.addEventListener("click", async () => {
 
     if (tracks.items.every((trackItem: any) => queue.some((track: any) => track.id === trackItem.track.id))) {
+      playPlaylistButton.innerHTML = `<img src="${pauseSecondaryIcon}" alt="Play Icon">`;
       console.log("La playlist es la misma");
       togglePlay();
+    } else if (tracks.items.every((trackItem: any) => queue.some((track: any) => track.id !== trackItem.track.id))){
+      playPlaylistButton.innerHTML = `<img src="${playSecondaryIcon}" alt="Play Icon">`;
+      queue = tracks.items.map((trackItem: any) => trackItem.track);
+      position = 0;
+      startPlayback(queue);
     } else {
       queue = tracks.items.map((trackItem: any) => trackItem.track);
       position = 0;
