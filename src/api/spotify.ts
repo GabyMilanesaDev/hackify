@@ -3,8 +3,8 @@ import { generateCodeChallenge, generateCodeVerifier } from "../utils";
 const apiAccount = 'https://accounts.spotify.com'
 const api = 'https://api.spotify.com'
 
-const limit = 'limit=15'
-const featuredLimit = 'limit=10'
+const limit = 'limit=50'
+const featuredLimit = 'limit=12'
 const categoryLimit = 'limit=20'
 
 export async function redirectToProvider(): Promise<void> {
