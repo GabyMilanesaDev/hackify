@@ -263,7 +263,7 @@ function renderFeaturedCategories(featuredPlaylists: any): void {
 
   featuredCategories.innerHTML = '';
 
-  featuredPlaylists.forEach((category: any, index: number) => {
+  featuredPlaylists.forEach((category: any) => {
     const li = document.createElement('li');
     const figure = document.createElement('figure');
     figure.style.backgroundColor = getRandomColor();
@@ -293,7 +293,7 @@ function renderCategories(categories: any): void {
 
   browseCategories.innerHTML = '';
 
-  categories.forEach((category: any, index: number) => {
+  categories.forEach((category: any) => {
     const li = document.createElement('li');
     const figure = document.createElement('figure');
     figure.style.backgroundColor = getRandomColor();
